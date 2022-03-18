@@ -1,0 +1,21 @@
+
+Bowling reservation system
+
+The goal of this system is to allow users to make reservations in a bowling alley and then manage those reservations. There are gonna be 2 roles: user and manager.
+
+User shall be able to create a reservation. Reservation is going to include the time of the start and the end, a preferred bowling lane and the number of people coming. There shall also be a way for the user to delete his reservation, provided he does so at least 24 hours before the scheduled start of the session. User shall be able to view all reservations so that he can pick the time when he wants to make the reservation.
+
+Manager shall be able to add or remove a bowling lane in case it gets broken/fixed.
+
+
+
+Technologies:
+
+The system is going to be a webapp. Backend is going to be written in Java (Spring) with a PosgreSQL database connected by Spring data JPA. Frontend shall be done in React.
+
+
+
+Life cycle model:
+
+The life cycle model used in the development of this application shall be waterfall. The reason for that is that the project is pretty small and requirements on the product are known from the beginning.
+
