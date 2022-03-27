@@ -16,23 +16,25 @@ public class BowlingLaneService {
         this.bowlingLaneRepository = bowlingLaneRepository;
     }
 
-    public BowlingLane addBowlingLane(int number) {
-        if (bowlingLaneRepository.findById(number).isPresent()) {
-            throw new IllegalStateException(String.format("Lane %d already exists", number));
-        }
+    public BowlingLane addBowlingLane(BowlingLane bowlingLane) {
+        int bowlingLaneNumber = bowlingLane.getNumber();
 
-        return bowlingLaneRepository.save(new BowlingLane(number));
+        if (bowlingLaneRepository.existsById(bowlingLaneNumber)) {
+            throw new IllegalStateException(String.format("Lane %d already exists", bowlingLaneNumber));
+        }
+        return bowlingLaneRepository.save(bowlingLane);
     }
 
-    public void removeBowlingLane(int number) {
-        if (bowlingLaneRepository.existsById(number)) {
-            throw new IllegalStateException(String.format("Lane %d does is not in the system", number));
-        }
+    public void removeBowlingLane(BowlingLane bowlingLane) {
+        int bowlingLaneNumber = bowlingLane.getNumber();
 
-        bowlingLaneRepository.deleteById(number);
+        if (!bowlingLaneRepository.existsById(bowlingLaneNumber)) {
+            throw new IllegalStateException(String.format("Lane %d is not in the system", bowlingLaneNumber));
+        }
+        bowlingLaneRepository.deleteById(bowlingLaneNumber);
     }
 
-    public List<Integer> getBowlingLaneNumbers() {
-        return bowlingLaneRepository.findAll().stream().map(BowlingLane::getNumber).toList();
+    public List<BowlingLane> getBowlingLanes() {
+        return bowlingLaneRepository.findAll();
     }
 }
