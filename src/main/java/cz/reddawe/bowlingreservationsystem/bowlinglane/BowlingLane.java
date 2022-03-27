@@ -11,8 +11,8 @@ public class BowlingLane {
     @Id
     @Column(
             name = "number",
-            updatable = false,
-            columnDefinition = "int"
+            columnDefinition = "int",
+            updatable = false
     )
     private Integer number;
 
@@ -25,9 +25,5 @@ public class BowlingLane {
 
     public Integer getNumber() {
         return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
     }
 }
