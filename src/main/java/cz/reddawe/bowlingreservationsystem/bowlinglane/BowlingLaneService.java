@@ -32,7 +32,7 @@ public class BowlingLaneService {
         bowlingLaneRepository.deleteById(number);
     }
 
-    public List<Integer> getBowlingLanes() {
+    public List<Integer> getBowlingLaneNumbers() {
         return bowlingLaneRepository.findAll().stream().map(BowlingLane::getNumber).toList();
     }
 }
