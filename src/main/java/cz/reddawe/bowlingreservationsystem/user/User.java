@@ -21,7 +21,7 @@ public class User implements UserDetails {
             strategy = GenerationType.SEQUENCE,
             generator = "user_sequence"
     )
-    @Column(
+    @JoinColumn(
             name = "id",
             columnDefinition = "bigint",
             updatable = false
