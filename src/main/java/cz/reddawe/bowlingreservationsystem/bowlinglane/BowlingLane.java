@@ -1,15 +1,15 @@
 package cz.reddawe.bowlingreservationsystem.bowlinglane;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 @Entity(name = "BowlingLane")
 @Table(name = "bowling_lanes")
 public class BowlingLane {
     @Id
-    @Column(
+    @JoinColumn(
             name = "number",
             columnDefinition = "int",
             updatable = false
