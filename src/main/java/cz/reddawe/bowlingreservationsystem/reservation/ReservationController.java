@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/reservation")
@@ -19,12 +20,12 @@ public class ReservationController {
     }
 
     @GetMapping(path = "get-all")
-    public Reservation[] getAllReservations() {
+    public List<Reservation> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
     @GetMapping(path = "get-my")
-    public Reservation[] getMyReservations() {
+    public List<Reservation> getMyReservations() {
         return reservationService.getMyReservations();
     }
 

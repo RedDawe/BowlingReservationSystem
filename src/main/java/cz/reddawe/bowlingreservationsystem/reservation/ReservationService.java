@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ReservationService {
 
@@ -15,7 +17,7 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Reservation[] getMyReservations() {
+    public List<Reservation> getMyReservations() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (! (principal instanceof User currentUser)) {
             throw new RuntimeException("SecurityContextHolder returned invalid object from getPrincipal");
@@ -24,16 +26,16 @@ public class ReservationService {
         return reservationRepository.findReservationsByUser(currentUser);
     }
 
-    public Reservation[] getAllReservations() {
-        return reservationRepository.findAll().toArray(Reservation[]::new);
+    public List<Reservation> getAllReservations() {
+        List<Reservation> allReservations = reservationRepository.findAll();
+
+        allReservations.forEach(reservation -> reservation.setUser(null));
+
+        return allReservations;
     }
 
     public Reservation createReservation(Reservation reservation) {
-        long reservationId = reservation.getId();
-
-        if (reservationRepository.existsById(reservationId)) {
-            throw new IllegalStateException(String.format("Reservation %s already exists", reservationId));
-        }
+        reservation.setUser((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
         return reservationRepository.save(reservation);
     }

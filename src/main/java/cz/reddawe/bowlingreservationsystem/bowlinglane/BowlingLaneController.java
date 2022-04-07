@@ -31,8 +31,8 @@ public class BowlingLaneController {
         return ResponseEntity.created(uri).body(bowlingLaneService.addBowlingLane(bowlingLane));
     }
 
-    @DeleteMapping(path = "remove")
-    public void removeBowlingLane(@RequestBody BowlingLane bowlingLane) {
-        bowlingLaneService.removeBowlingLane(bowlingLane);
+    @DeleteMapping(path = "remove/{number}")
+    public void removeBowlingLane(@PathVariable("number") int number) {
+        bowlingLaneService.removeBowlingLane(number);
     }
 }

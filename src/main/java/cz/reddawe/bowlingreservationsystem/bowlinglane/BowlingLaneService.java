@@ -25,8 +25,7 @@ public class BowlingLaneService {
         return bowlingLaneRepository.save(bowlingLane);
     }
 
-    public void removeBowlingLane(BowlingLane bowlingLane) {
-        int bowlingLaneNumber = bowlingLane.getNumber();
+    public void removeBowlingLane(int bowlingLaneNumber) {
 
         if (!bowlingLaneRepository.existsById(bowlingLaneNumber)) {
             throw new IllegalStateException(String.format("Lane %d is not in the system", bowlingLaneNumber));
