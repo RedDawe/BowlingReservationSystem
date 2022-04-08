@@ -17,27 +17,46 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<Reservation> getMyReservations() {
+    private static User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (! (principal instanceof User currentUser)) {
             throw new RuntimeException("SecurityContextHolder returned invalid object from getPrincipal");
         }
 
-        return reservationRepository.findReservationsByUser(currentUser);
+        return currentUser;
+    }
+
+    private static void nullUser(Reservation reservation) {
+        reservation.setUser(null);
+    }
+
+    private static void nullUsers(List<Reservation> reservations) {
+        reservations.forEach(ReservationService::nullUser);
+    }
+
+    public List<Reservation> getMyReservations() {
+        User currentUser = getCurrentUser();
+
+        List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(currentUser);
+        nullUsers(reservationsByUser);
+
+        return reservationsByUser;
     }
 
     public List<Reservation> getAllReservations() {
-        List<Reservation> allReservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
+        nullUsers(reservations);
 
-        allReservations.forEach(reservation -> reservation.setUser(null));
-
-        return allReservations;
+        return reservations;
     }
 
     public Reservation createReservation(Reservation reservation) {
-        reservation.setUser((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        reservation.setUser(getCurrentUser());
 
-        return reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
+
+        nullUser(reservation);
+        return reservation;
     }
 
     public void deleteReservation(long reservationId) {
