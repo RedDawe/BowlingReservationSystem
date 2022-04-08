@@ -26,9 +26,7 @@ public class BowlingLaneController {
 
     @PostMapping(path = "add")
     public ResponseEntity<BowlingLane> addBowlingLane(@RequestBody BowlingLane bowlingLane) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("api/v1/bowling-lane/add")
-                .toUriString());
-        return ResponseEntity.created(uri).body(bowlingLaneService.addBowlingLane(bowlingLane));
+        return ResponseEntity.ok().body(bowlingLaneService.addBowlingLane(bowlingLane));
     }
 
     @DeleteMapping(path = "remove/{number}")

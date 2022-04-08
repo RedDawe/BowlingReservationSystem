@@ -31,9 +31,7 @@ public class ReservationController {
 
     @PostMapping(path = "create")
     public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("api/v1/reservation/create")
-                .toUriString());
-        return ResponseEntity.created(uri).body(reservationService.createReservation(reservation));
+        return ResponseEntity.ok().body(reservationService.createReservation(reservation));
     }
 
     @DeleteMapping(path = "delete/{reservationId}")
