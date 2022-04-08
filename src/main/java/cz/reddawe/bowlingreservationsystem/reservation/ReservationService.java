@@ -53,10 +53,10 @@ public class ReservationService {
     public Reservation createReservation(Reservation reservation) {
         reservation.setUser(getCurrentUser());
 
-        reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        nullUser(reservation);
-        return reservation;
+        nullUser(savedReservation);
+        return savedReservation;
     }
 
     public void deleteReservation(long reservationId) {
