@@ -37,7 +37,7 @@ public class UserService implements UserDetailsService {
      * @param username
      * @return whether username satisfies requirements
      */
-    public boolean validateUsername(String username) {
+    private static boolean validateUsername(String username) {
         return username.matches(usernameRegex);
     }
 
@@ -51,7 +51,7 @@ public class UserService implements UserDetailsService {
      * @param password
      * @return whether password satisfies requirements
      */
-    public boolean validatePassword(String password) {
+    private static boolean validatePassword(String password) {
         return password.matches(passwordRegex);
     }
 

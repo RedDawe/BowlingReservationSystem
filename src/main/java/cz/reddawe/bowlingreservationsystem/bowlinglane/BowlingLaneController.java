@@ -26,13 +26,11 @@ public class BowlingLaneController {
 
     @PostMapping(path = "add")
     public ResponseEntity<BowlingLane> addBowlingLane(@RequestBody BowlingLane bowlingLane) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("api/v1/bowling-lane/add")
-                .toUriString());
-        return ResponseEntity.created(uri).body(bowlingLaneService.addBowlingLane(bowlingLane));
+        return ResponseEntity.ok().body(bowlingLaneService.addBowlingLane(bowlingLane));
     }
 
-    @DeleteMapping(path = "remove")
-    public void removeBowlingLane(@RequestBody BowlingLane bowlingLane) {
-        bowlingLaneService.removeBowlingLane(bowlingLane);
+    @DeleteMapping(path = "remove/{number}")
+    public void removeBowlingLane(@PathVariable("number") int number) {
+        bowlingLaneService.removeBowlingLane(number);
     }
 }

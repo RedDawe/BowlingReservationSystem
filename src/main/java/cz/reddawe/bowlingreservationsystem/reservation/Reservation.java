@@ -63,6 +63,19 @@ public class Reservation {
     @ManyToOne(optional = false)
     private BowlingLane bowlingLane;
 
+    public Reservation() {
+    }
+
+    public Reservation(LocalTime start, LocalTime end, LocalDate date, int peopleComing,
+                       User user, BowlingLane bowlingLane) {
+        this.start = start;
+        this.end = end;
+        this.date = date;
+        this.peopleComing = peopleComing;
+        this.user = user;
+        this.bowlingLane = bowlingLane;
+    }
+
     public Long getId() {
         return id;
     }
