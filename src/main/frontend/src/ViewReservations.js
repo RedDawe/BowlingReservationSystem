@@ -20,93 +20,118 @@ const localizer = dateFnsLocalizer({
     locales,
 })
 
-const firstEvent = {
-    start: new Date('2022-04-12T09:00'),
-    end: new Date('2022-04-12T10:00'),
-    // title: 'HOLA HOLA KAPITANE'
-}
-
-const myEventsList = [firstEvent];
-
 const MonthEvent = ({ event }) => (
-    <div className={'event.someProp ? styles.specialEvent : styles.event'}>
-        {/*<div className={'styles.eventTime'}>{event.start.toString()}</div>*/}
-        {/*<div className={'styles.eventName'}>{event.end.toString()}</div>*/}
-        <div>There are definitely some poeple coming</div>
+    <div>
+        <div> {event.peopleComing} </div>
     </div>
 );
 
 const eventStyleGetter = (event, start, end, isSelected) => {
+    const backgroundColor = event.isMine ? 'green' : 'red';
+
     return {
         style: {
-            backgroundColor: 'green',
-            // backgroundColor: '#' + event.hexColor,
-            // borderRadius: '0px',
-            // opacity: 0.8,
-            // color: 'black',
-            // border: '0px',
-            // display: 'block'
+            backgroundColor: backgroundColor
         }
     };
 }
 
-const MyCalendar = props => (
-    <div>
-        <Calendar
-            localizer={localizer}
-            events={myEventsList}
-            startAccessor="start"
-            endAccessor="end"
-            // titleAccesor="title"
-            style={{ height: 1000, width: 400 }}
-            defaultView={'day'}
-            // date={"2022-03-12"}
-
-            components={{
-                event: MonthEvent,
-            }}
-            // formats={{ eventTimeRangeFormat: () => null }}
-            eventPropGetter={(eventStyleGetter)}
-        />
-    </div>
-)
 
 class ViewReservations extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {response:[]};
+        this.state = {response: [], eventList: [], bowlingLanes: []};
 
     }
 
     componentDidMount() {
         this.fetchReservations();
+        this.fetchBowlingLanes();
+    }
+
+    fetchBowlingLanes() {
+        fetch('http://localhost:8080/api/v1/bowling-lane/get')
+            .then(response => response.json())
+            .then(bowlingLanes => {
+                this.setState({bowlingLanes: bowlingLanes});
+            })
     }
 
     fetchReservations() {
         fetch('http://localhost:8080/api/v1/reservation/get-all')
             .then(response => response.json())
-            .then(reservations => this.setState({response: reservations}))
+            .then(reservations => {
+                this.setState({response: reservations}, () => this.addEvents());
+            })
+    }
+
+    addEvents() {
+        const events = this.getReservations();
+        this.setState({response: this.state.response, eventList: events});
     }
 
     getReservations() {
+
+
         return this.state.response.map(reservation => {
-            return (
-                <div key={reservation.id}>
-                    { reservation.peopleComing }
-                </div>
+            let endTimeDate = new Date(reservation.date + 'T' + reservation.end);
 
+            if (reservation.start >= reservation.end) {
+                // endTimeDate.setDate(endTimeDate.getDate() + date.addDays(1));
+                endTimeDate = new Date(endTimeDate.getTime() + 86400000);
+            }
 
+            console.log(new Date(reservation.date + 'T' + reservation.start));
+            console.log(endTimeDate);
+
+            return ({
+                    start: new Date(reservation.date + 'T' + reservation.start),
+                    end: endTimeDate,
+                    peopleComing: reservation.peopleComing,
+                    isMine: reservation.isMine,
+                    bowlingLane: reservation.bowlingLane,
+            }
             )
         })
     }
 
 
+    myCalendar(number, eventList) {
+        return (
+            <div className={'rbc-master-box'}>
+                <p className={'bowling-lane-label'}>{'Lane number : ' + number.toString()}</p>
+                <Calendar
+                    localizer={localizer}
+                    events={eventList}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ height: 1000, width: 200 }}
+                    defaultView={'day'}
+                    showMultiDayTimes={true}
+
+                    components={{
+                        event: MonthEvent,
+                    }}
+                    eventPropGetter={(eventStyleGetter)}
+                />
+            </div>
+        )
+    }
+
+    calendarForEachLane() {
+        const calendars = []
+        this.state.bowlingLanes.forEach(bowlingLane => {
+            const i = bowlingLane.number;
+            calendars[i] = this.myCalendar(i, this.state.eventList.filter((event) => event.bowlingLane.number === i))
+        })
+
+        return calendars;
+    }
 
     render() {
         return (
             <div>
-                { this.getReservations() }
-                <MyCalendar />
+                { this.calendarForEachLane() }
             </div>
         )
     }
