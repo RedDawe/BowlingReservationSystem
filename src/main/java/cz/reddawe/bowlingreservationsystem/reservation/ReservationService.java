@@ -6,6 +6,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -17,46 +19,72 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    private static User getCurrentUser() {
+    private static Optional<User> getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (! (principal instanceof User currentUser)) {
-            throw new RuntimeException("SecurityContextHolder returned invalid object from getPrincipal");
-        }
-
-        return currentUser;
+        if (principal == null) throw new RuntimeException("Authentication returned null from getPrincipal");
+        if (principal.equals("anonymousUser")) return Optional.empty();
+        if (principal.getClass() != User.class) throw new RuntimeException("""
+                Authentication::getPrincipal() returned object other than "anonymousUser" or
+                cz.reddawe.bowlingreservationsystem.user.User
+                """
+        );
+        return Optional.of((User) principal);
     }
 
-    private static void nullUser(Reservation reservation) {
-        reservation.setUser(null);
+    private static ReservationWithIsMineFlag reservationToReservationWithIsMineFlag(
+            Reservation reservation, Optional<User> currentUser) {
+
+
+        return new ReservationWithIsMineFlag(
+                reservation.getId(), reservation.getStart(), reservation.getEnd(), reservation.getDate(),
+                reservation.getPeopleComing(), reservation.getUser().equals(currentUser.orElse(null)),
+                reservation.getBowlingLane());
     }
 
-    private static void nullUsers(List<Reservation> reservations) {
-        reservations.forEach(ReservationService::nullUser);
+    private static ReservationWithoutUser reservationToReservationWithoutUser(Reservation reservation) {
+
+        return new ReservationWithoutUser(
+                reservation.getId(), reservation.getStart(), reservation.getEnd(), reservation.getDate(),
+                reservation.getPeopleComing(), reservation.getBowlingLane());
     }
 
-    public List<Reservation> getMyReservations() {
-        User currentUser = getCurrentUser();
-
-        List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(currentUser);
-        nullUsers(reservationsByUser);
-
-        return reservationsByUser;
+    private static Reservation reservationInputToReservation(ReservationInput reservationInput, User currentUser) {
+        return new Reservation(
+                reservationInput.start(), reservationInput.end(), reservationInput.date(),
+                reservationInput.peopleComing(), currentUser, reservationInput.bowlingLane()
+        );
     }
 
-    public List<Reservation> getAllReservations() {
+    public List<ReservationWithIsMineFlag> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
-        nullUsers(reservations);
 
-        return reservations;
+        Optional<User> currentUser = getCurrentUser();
+        return reservations.stream()
+                .map(reservation -> reservationToReservationWithIsMineFlag(reservation, currentUser))
+                .toList();
     }
 
-    public Reservation createReservation(Reservation reservation) {
-        reservation.setUser(getCurrentUser());
+    public List<ReservationWithoutUser> getMyReservations() {
+        List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(
+                getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                            getMyReservations can only be called by an authorized user
+                        """))
+        );
+
+        return reservationsByUser.stream()
+                .map(ReservationService::reservationToReservationWithoutUser)
+                .toList();
+    }
+
+    public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
+        Reservation reservation = reservationInputToReservation(reservationInput,
+                getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                            createReservation can only be called by an authorized user
+                        """))
+        );
 
         Reservation savedReservation = reservationRepository.save(reservation);
-
-        nullUser(savedReservation);
-        return savedReservation;
+        return reservationToReservationWithoutUser(savedReservation);
     }
 
     public void deleteReservation(long reservationId) {
