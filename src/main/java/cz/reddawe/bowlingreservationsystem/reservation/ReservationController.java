@@ -20,18 +20,18 @@ public class ReservationController {
     }
 
     @GetMapping(path = "get-all")
-    public List<Reservation> getAllReservations() {
+    public List<ReservationWithIsMineFlag> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
     @GetMapping(path = "get-my")
-    public List<Reservation> getMyReservations() {
+    public List<ReservationWithoutUser> getMyReservations() {
         return reservationService.getMyReservations();
     }
 
     @PostMapping(path = "create")
-    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
-        return ResponseEntity.ok().body(reservationService.createReservation(reservation));
+    public ResponseEntity<ReservationWithoutUser> createReservation(@RequestBody ReservationInput reservationInput) {
+        return ResponseEntity.ok().body(reservationService.createReservation(reservationInput));
     }
 
     @DeleteMapping(path = "delete/{reservationId}")
