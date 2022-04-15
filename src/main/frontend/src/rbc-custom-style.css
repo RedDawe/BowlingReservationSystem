@@ -1,0 +1,25 @@
+.rbc-timeslot-group {
+    min-height: 40px;
+}
+
+.rbc-event {
+    /*border-radius: 0px;*/
+}
+
+/*.rbc-calendar {*/
+/*    margin-left: 80px;*/
+/*    float: left;*/
+/*}*/
+
+.rbc-master-box {
+    margin-left: 80px;
+    float: left;
+}
+
+.bowling-lane-label {
+    text-align: center;
+}
+
+.rbc-toolbar-label {
+    margin: 3px;
+}
