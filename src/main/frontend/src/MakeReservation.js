@@ -43,12 +43,24 @@ class MakeReservation extends React.Component {
         return (
             <div>
                 <form onSubmit={this.handleSubmit}>
+                    <label>Start: </label>
                     <input type={"date"} value={this.state.date} onChange={this.handleChange} name={"date"} />
                     <input type={"time"} value={this.state.start} onChange={this.handleChange} name={"start"} />
+
+                    <br />
+                    <label>End: </label>
                     <input type={"time"} value={this.state.end} onChange={this.handleChange} name={"end"} />
+
+                    <br />
+                    <label>Number of people coming:</label>
                     <input type={"number"} value={this.state.peopleComing} onChange={this.handleChange} name={"peopleComing"} />
+
+                    <br />
+                    <label>Preferred lane: </label>
                     <input type={"number"} value={this.state.bowlingLane} onChange={this.handleChange} name={"bowlingLane"} />
 
+                    <br />
+                    <br />
                     <input type={"submit"} value={"Make reservation"} />
                 </form>
             </div>

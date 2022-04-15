@@ -34,7 +34,7 @@ class AddBowlingLane extends React.Component {
         return (
             <div>
                 <form onSubmit={this.handleSubmit}>
-                    <label>Number:</label>
+                    <label>Number: </label>
                     <input type={"number"} value={this.state.value} onChange={this.handleChange} />
                     <br/>
                     <input type={"submit"} value={"Add"} />
