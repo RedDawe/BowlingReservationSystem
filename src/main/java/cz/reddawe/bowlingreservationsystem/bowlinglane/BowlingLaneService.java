@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BowlingLaneService {
@@ -33,7 +32,7 @@ public class BowlingLaneService {
         bowlingLaneRepository.deleteById(bowlingLaneNumber);
     }
 
-    public List<BowlingLane> getBowlingLanes() {
-        return bowlingLaneRepository.findAll();
+    public List<BowlingLane> getBowlingLanesOrdered() {
+        return bowlingLaneRepository.findAllByOrderByNumber();
     }
 }
