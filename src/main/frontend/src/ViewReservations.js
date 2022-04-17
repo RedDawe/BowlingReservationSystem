@@ -120,9 +120,10 @@ class ViewReservations extends React.Component {
 
     calendarForEachLane() {
         const calendars = []
+        let index = 0;
         this.state.bowlingLanes.forEach(bowlingLane => {
             const i = bowlingLane.number;
-            calendars[i] = this.myCalendar(i, this.state.eventList.filter((event) => event.bowlingLane.number === i))
+            calendars[index++] = this.myCalendar(i, this.state.eventList.filter((event) => event.bowlingLane.number === i))
         })
 
         return calendars;
