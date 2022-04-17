@@ -76,7 +76,27 @@ public class ReservationService {
                 .toList();
     }
 
+    private boolean overlaps(ReservationInput reservationInput) {
+        return reservationRepository.findReservationsByBowlingLaneAndStartBeforeAndEndAfter(
+                reservationInput.bowlingLane(), reservationInput.end(), reservationInput.start()
+        ).size() > 0;
+    }
+
+    private void throwIfNotValidReservation(ReservationInput reservationInput) {
+        if (reservationInput.peopleComing() < 1) {
+            throw new IllegalArgumentException("Reservation.peopleComing has to be at least 1");
+        }
+
+        if (overlaps(reservationInput)) {
+            throw new IllegalStateException(
+                    "Reservation cannot be created because it would overlap with another reservation"
+            );
+        }
+    }
+
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
+        throwIfNotValidReservation(reservationInput);
+
         Reservation reservation = reservationInputToReservation(reservationInput,
                 getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                             createReservation can only be called by an authorized user
