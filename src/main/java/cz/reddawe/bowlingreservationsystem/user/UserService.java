@@ -55,18 +55,18 @@ public class UserService implements UserDetailsService {
         return password.matches(passwordRegex);
     }
 
-    public void registerUser(User user) {
-        if (!validateUsername(user.getUsername())) {
-            throw new IllegalArgumentException(String.format("Username %s is not valid", user.getUsername()));
+    public void registerUser(UserInput userInput) {
+        if (!validateUsername(userInput.username())) {
+            throw new IllegalArgumentException(String.format("Username %s is not valid", userInput.username()));
         }
-        if (!validatePassword(user.getPassword())) {
+        if (!validatePassword(userInput.password())) {
             throw new IllegalArgumentException("Password is not valid");
         }
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalStateException(String.format("Username %s already exists", user.getUsername()));
+        if (userRepository.findByUsername(userInput.username()).isPresent()) {
+            throw new IllegalStateException(String.format("Username %s already exists", userInput.username()));
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user = new User(userInput.username(), passwordEncoder.encode(userInput.password()));
 
         userRepository.save(user);
     }

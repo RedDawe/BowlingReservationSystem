@@ -19,8 +19,8 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<Void> registerUser(@RequestBody User user) {
-        userService.registerUser(user);
+    public ResponseEntity<Void> registerUser(@RequestBody UserInput userInput) {
+        userService.registerUser(userInput);
         return ResponseEntity.noContent().build();
     }
 }
