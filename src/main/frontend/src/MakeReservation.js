@@ -8,7 +8,7 @@ class MakeReservation extends React.Component {
             start: '',
             end: '',
             peopleComing: '',
-            bowlingLane: ''
+            bowlingLaneNumber: ''
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -19,6 +19,16 @@ class MakeReservation extends React.Component {
         console.log(this.state);
         console.log(JSON.stringify(this.state));
 
+        const date = this.state.date;
+        const start = this.state.start;
+        const end = this.state.end;
+        const peopleComing = this.state.peopleComing;
+        const bowlingLaneNumber = this.state.bowlingLaneNumber;
+
+        const datePlus1 = new Date(new Date(date).getTime() + 86400000).toISOString().split('T')[0];
+
+        console.log(datePlus1);
+
         const base64 = require('base-64');
         const username = 'manager';
         const password = 'password1';
@@ -28,9 +38,15 @@ class MakeReservation extends React.Component {
                 'Content-Type': 'application/json',
                 Authorization: 'Basic ' + base64.encode(username + ":" + password)
             },
-            body: JSON.stringify(this.state)
+            body: JSON.stringify({
+                start: date + 'T' + start,
+                end: (start < end ? date + 'T' + end : datePlus1 + 'T' + end),
+                peopleComing: peopleComing,
+                bowlingLane: {number: bowlingLaneNumber}
+            })
 
-        })
+        }).then(response => response.json())
+            .then(json => console.log(json));
 
         event.preventDefault();
     }
@@ -53,11 +69,13 @@ class MakeReservation extends React.Component {
 
                     <br />
                     <label>Number of people coming:</label>
-                    <input type={"number"} value={this.state.peopleComing} onChange={this.handleChange} name={"peopleComing"} />
+                    <input type={"number"} value={this.state.peopleComing}
+                           onChange={this.handleChange} name={"peopleComing"} />
 
                     <br />
                     <label>Preferred lane: </label>
-                    <input type={"number"} value={this.state.bowlingLane} onChange={this.handleChange} name={"bowlingLane"} />
+                    <input type={"number"} value={this.state.bowlingLaneNumber}
+                           onChange={this.handleChange} name={"bowlingLaneNumber"} />
 
                     <br />
                     <br />

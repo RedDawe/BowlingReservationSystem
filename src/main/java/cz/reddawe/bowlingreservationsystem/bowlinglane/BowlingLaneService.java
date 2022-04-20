@@ -1,5 +1,6 @@
 package cz.reddawe.bowlingreservationsystem.bowlinglane;
 
+import cz.reddawe.bowlingreservationsystem.reservation.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,10 +9,12 @@ import java.util.List;
 @Service
 public class BowlingLaneService {
 
+    private final ReservationService reservationService;
     private final BowlingLaneRepository bowlingLaneRepository;
 
     @Autowired
-    public BowlingLaneService(BowlingLaneRepository bowlingLaneRepository) {
+    public BowlingLaneService(ReservationService reservationService, BowlingLaneRepository bowlingLaneRepository) {
+        this.reservationService = reservationService;
         this.bowlingLaneRepository = bowlingLaneRepository;
     }
 
@@ -24,12 +27,16 @@ public class BowlingLaneService {
         return bowlingLaneRepository.save(bowlingLane);
     }
 
-    public void removeBowlingLane(int bowlingLaneNumber) {
+    public List<String> removeBowlingLane(int bowlingLaneNumber) {
+        BowlingLane toBeRemoved = bowlingLaneRepository.findById(bowlingLaneNumber).orElseThrow(
+                () -> new IllegalStateException(String.format("Lane %d does not exist", bowlingLaneNumber)));
+        List<BowlingLane> allOtherBowlingLanes = bowlingLaneRepository.findBowlingLanesByNumberNot(bowlingLaneNumber);
 
-        if (!bowlingLaneRepository.existsById(bowlingLaneNumber)) {
-            throw new IllegalStateException(String.format("Lane %d is not in the system", bowlingLaneNumber));
-        }
+        List<String> couldNotReassign = reservationService.reassignReservationsFromLane(
+                toBeRemoved, allOtherBowlingLanes);
+
         bowlingLaneRepository.deleteById(bowlingLaneNumber);
+        return couldNotReassign;
     }
 
     public List<BowlingLane> getBowlingLanesOrdered() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
+import {Calendar, dateFnsLocalizer} from 'react-big-calendar'
 import format from 'date-fns/format'
 import parse from 'date-fns/parse'
 import startOfWeek from 'date-fns/startOfWeek'
@@ -20,7 +20,7 @@ const localizer = dateFnsLocalizer({
     locales,
 })
 
-const MonthEvent = ({ event }) => (
+const MonthEvent = ({event}) => (
     <div>
         <div> {event.peopleComing} </div>
     </div>
@@ -71,26 +71,14 @@ class ViewReservations extends React.Component {
     }
 
     getReservations() {
-
-
         return this.state.response.map(reservation => {
-            let endTimeDate = new Date(reservation.date + 'T' + reservation.end);
-
-            if (reservation.start >= reservation.end) {
-                // endTimeDate.setDate(endTimeDate.getDate() + date.addDays(1));
-                endTimeDate = new Date(endTimeDate.getTime() + 86400000);
-            }
-
-            console.log(new Date(reservation.date + 'T' + reservation.start));
-            console.log(endTimeDate);
-
             return ({
-                    start: new Date(reservation.date + 'T' + reservation.start),
-                    end: endTimeDate,
+                    start: new Date(reservation.start),
+                    end: new Date(reservation.end),
                     peopleComing: reservation.peopleComing,
                     isMine: reservation.isMine,
                     bowlingLane: reservation.bowlingLane,
-            }
+                }
             )
         })
     }
@@ -98,14 +86,14 @@ class ViewReservations extends React.Component {
 
     myCalendar(number, eventList) {
         return (
-            <div className={'rbc-master-box'}>
+            <div key={number} className={'rbc-master-box'}>
                 <p className={'bowling-lane-label'}>{'Lane number : ' + number.toString()}</p>
                 <Calendar
                     localizer={localizer}
                     events={eventList}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{ height: 1000, width: 200 }}
+                    style={{height: 1000, width: 200}}
                     defaultView={'day'}
                     showMultiDayTimes={true}
 
@@ -132,7 +120,7 @@ class ViewReservations extends React.Component {
     render() {
         return (
             <div>
-                { this.calendarForEachLane() }
+                {this.calendarForEachLane()}
             </div>
         )
     }

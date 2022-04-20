@@ -1,12 +1,17 @@
 package cz.reddawe.bowlingreservationsystem.reservation;
 
+import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLane;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,7 +41,7 @@ public class ReservationService {
 
 
         return new ReservationWithIsMineFlag(
-                reservation.getId(), reservation.getStart(), reservation.getEnd(), reservation.getDate(),
+                reservation.getId(), reservation.getStart(), reservation.getEnd(),
                 reservation.getPeopleComing(), reservation.getUser().equals(currentUser.orElse(null)),
                 reservation.getBowlingLane());
     }
@@ -44,13 +49,13 @@ public class ReservationService {
     private static ReservationWithoutUser reservationToReservationWithoutUser(Reservation reservation) {
 
         return new ReservationWithoutUser(
-                reservation.getId(), reservation.getStart(), reservation.getEnd(), reservation.getDate(),
+                reservation.getId(), reservation.getStart(), reservation.getEnd(),
                 reservation.getPeopleComing(), reservation.getBowlingLane());
     }
 
     private static Reservation reservationInputToReservation(ReservationInput reservationInput, User currentUser) {
         return new Reservation(
-                reservationInput.start(), reservationInput.end(), reservationInput.date(),
+                reservationInput.start(), reservationInput.end(),
                 reservationInput.peopleComing(), currentUser, reservationInput.bowlingLane()
         );
     }
@@ -76,10 +81,14 @@ public class ReservationService {
                 .toList();
     }
 
+    private boolean overlaps(BowlingLane bowlingLane, LocalDateTime start, LocalDateTime end) {
+        return reservationRepository.findReservationsByBowlingLaneAndStartBeforeAndEndAfter(bowlingLane, end, start)
+                .size() > 0;
+    }
+
     private boolean overlaps(ReservationInput reservationInput) {
-        return reservationRepository.findReservationsByBowlingLaneAndStartBeforeAndEndAfter(
-                reservationInput.bowlingLane(), reservationInput.end(), reservationInput.start()
-        ).size() > 0;
+        return overlaps(reservationInput.bowlingLane(),
+                reservationInput.start(), reservationInput.end());
     }
 
     private void throwIfNotValidReservation(ReservationInput reservationInput) {
@@ -96,14 +105,12 @@ public class ReservationService {
 
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
         throwIfNotValidReservation(reservationInput);
-
-        Reservation reservation = reservationInputToReservation(reservationInput,
-                getCurrentUser().orElseThrow(() -> new IllegalStateException("""
-                            createReservation can only be called by an authorized user
-                        """))
-        );
+        User currentUser = getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                createReservation can only be called by an authorized user"""));
+        Reservation reservation = reservationInputToReservation(reservationInput, currentUser);
 
         Reservation savedReservation = reservationRepository.save(reservation);
+
         return reservationToReservationWithoutUser(savedReservation);
     }
 
@@ -113,5 +120,33 @@ public class ReservationService {
         }
 
         reservationRepository.deleteById(reservationId);
+    }
+
+    @Transactional
+    protected boolean reassignReservation(Reservation reservation, List<BowlingLane> allOtherLanes) {
+        for (BowlingLane bowlingLane : allOtherLanes) {
+            if (overlaps(bowlingLane, reservation.getStart(), reservation.getEnd())) {
+                continue;
+            }
+
+            reservation.setBowlingLane(bowlingLane);
+            return true;
+        }
+
+        return false;
+    }
+
+    public List<String> reassignReservationsFromLane(BowlingLane reassignFrom, List<BowlingLane> allOtherLanes) {
+        List<Reservation> toBeReassigned = reservationRepository.findReservationsByBowlingLane(reassignFrom);
+        List<String> couldNotReassign = new ArrayList<>();
+
+        for (Reservation reservation : toBeReassigned) {
+            if (!reassignReservation(reservation, allOtherLanes)) {
+                couldNotReassign.add(reservation.toString());
+                reservationRepository.delete(reservation);
+            }
+        }
+
+        return couldNotReassign;
     }
 }

@@ -5,6 +5,7 @@ import cz.reddawe.bowlingreservationsystem.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity(name = "Reservation")
@@ -31,24 +32,17 @@ public class Reservation {
 
     @Column(
             name = "reservation_start",
-            columnDefinition = "time",
+            columnDefinition = "timestamp without time zone",
             nullable = false
     )
-    private LocalTime start;
+    private LocalDateTime start;
 
     @Column(
             name = "reservation_end",
-            columnDefinition = "time",
+            columnDefinition = "timestamp without time zone",
             nullable = false
     )
-    private LocalTime end;
-
-    @Column(
-            name = "reservation_date",
-            columnDefinition = "date",
-            nullable = false
-    )
-    private LocalDate date;
+    private LocalDateTime end;
 
     @Column(
             name = "people_coming",
@@ -66,11 +60,10 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(LocalTime start, LocalTime end, LocalDate date, int peopleComing,
+    public Reservation(LocalDateTime start, LocalDateTime end, int peopleComing,
                        User user, BowlingLane bowlingLane) {
         this.start = start;
         this.end = end;
-        this.date = date;
         this.peopleComing = peopleComing;
         this.user = user;
         this.bowlingLane = bowlingLane;
@@ -80,28 +73,20 @@ public class Reservation {
         return id;
     }
 
-    public LocalTime getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public void setStart(LocalTime start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
-    public LocalTime getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
-    public void setEnd(LocalTime end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     public int getPeopleComing() {
@@ -126,5 +111,17 @@ public class Reservation {
 
     public void setBowlingLane(BowlingLane bowlingLane) {
         this.bowlingLane = bowlingLane;
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", start=" + start +
+                ", end=" + end +
+                ", peopleComing=" + peopleComing +
+                ", user=" + user +
+                ", bowlingLane=" + bowlingLane +
+                '}';
     }
 }
