@@ -28,7 +28,7 @@ public class BowlingLaneController {
     }
 
     @DeleteMapping(path = "remove/{number}")
-    public void removeBowlingLane(@PathVariable("number") int number) {
-        bowlingLaneService.removeBowlingLane(number);
+    public List<String> removeBowlingLane(@PathVariable("number") int number) {
+        return bowlingLaneService.removeBowlingLane(number);
     }
 }

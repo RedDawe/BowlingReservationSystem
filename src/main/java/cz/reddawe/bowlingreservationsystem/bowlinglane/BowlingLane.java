@@ -26,4 +26,11 @@ public class BowlingLane {
     public Integer getNumber() {
         return number;
     }
+
+    @Override
+    public String toString() {
+        return "BowlingLane{" +
+                "number=" + number +
+                '}';
+    }
 }

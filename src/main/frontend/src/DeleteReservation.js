@@ -40,11 +40,10 @@ class DeleteReservation extends React.Component {
             return (
                 <div key={reservation.id}>
                     <div>
-                        <p>{ reservation.date }</p>
-                        <p>{ reservation.start }</p>
-                        <p>{ reservation.end }</p>
-                        <p>{ reservation.peopleComing }</p>
-                        <p>{ reservation.bowlingLane.number }</p>
+                        <p> Start: { reservation.start.replace('T', ' -> ') }</p>
+                        <p> End: { reservation.end.replace('T', ' -> ') }</p>
+                        <p> PeopleComing: { reservation.peopleComing }</p>
+                        <p> Bowling Lane: { reservation.bowlingLane.number }</p>
 
                         <button data-key={ reservation.id } onClick={ this.handleClick }>Delete</button>
                     </div>
