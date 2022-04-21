@@ -84,4 +84,8 @@ public class UserService implements UserDetailsService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
+    public void logout() {
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

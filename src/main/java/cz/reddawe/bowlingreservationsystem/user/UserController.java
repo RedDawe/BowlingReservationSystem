@@ -29,4 +29,9 @@ public class UserController {
     public void login(@RequestBody UserInput userInput) {
         userService.login(userInput);
     }
+
+    @PostMapping("logout")
+    public void logout() {
+        userService.logout();
+    }
 }
