@@ -14,6 +14,7 @@ import AddBowlingLane from "./AddBowlingLane";
 import DeleteReservation from "./DeleteReservation";
 import ViewReservations from "./ViewReservations";
 import Registration from "./Registration";
+import Login from "./Login"
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 root.render(
@@ -24,6 +25,7 @@ root.render(
                 <Route path={'/'} element={<MainMenu />} />
 
                 <Route path={'/register'} element={<Registration />} />
+                <Route path={'/login'} element={<Login />} />
                 <Route path={"/reservation/make"} element={<MakeReservation />} />
                 <Route path={"/reservation/delete"} element={<DeleteReservation />} />
                 <Route path={"/reservations/view"} element={<ViewReservations />} />

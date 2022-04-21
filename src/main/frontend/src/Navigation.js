@@ -6,6 +6,7 @@ function Navigation(props) {
     return (
         <div>
             <button onClick={() => {navigate('/')}}>Home</button>
+            <button onClick={() => {navigate('/login')}}>Login</button>
         </div>
     )
 }

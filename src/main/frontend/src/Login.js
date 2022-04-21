@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-class RegistrationComponent extends React.Component {
+class LoginComponent extends React.Component {
     constructor(props) {
         super(props);
 
@@ -15,7 +15,7 @@ class RegistrationComponent extends React.Component {
     }
 
     handleSubmit(event) {
-        fetch('http://localhost:8080/api/v1/user/register', {
+        fetch('http://localhost:8080/api/v1/user/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ class RegistrationComponent extends React.Component {
 
         })
 
-        this.props.navigate('/login');
+        this.props.navigate('/');
     }
 
     handleChange(event) {
@@ -38,16 +38,16 @@ class RegistrationComponent extends React.Component {
                     <input type={"text"} value={this.state.username} onChange={this.handleChange} name={"username"} />
                     <input type={"text"} value={this.state.password} onChange={this.handleChange} name={"password"} />
 
-                    <input type={"submit"} value={"Register"} />
+                    <input type={"submit"} value={"Login"} />
                 </form>
             </div>
         )
     }
 }
 
-function Registration(props) {
+function Login(props) {
     const navigate = useNavigate();
-    return <RegistrationComponent {...props} navigate={navigate} />
+    return <LoginComponent {...props} navigate={navigate} />
 }
 
-export default Registration;
+export default Login;
