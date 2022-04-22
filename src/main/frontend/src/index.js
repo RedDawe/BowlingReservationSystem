@@ -24,8 +24,8 @@ root.render(
             <Routes>
                 <Route path={'/'} element={<MainMenu />} />
 
-                <Route path={'/register'} element={<Registration />} />
-                <Route path={'/login'} element={<Login />} />
+                <Route path={'/user/register'} element={<Registration />} />
+                <Route path={'/user/login'} element={<Login />} />
                 <Route path={"/reservation/make"} element={<MakeReservation />} />
                 <Route path={"/reservation/delete"} element={<DeleteReservation />} />
                 <Route path={"/reservations/view"} element={<ViewReservations />} />

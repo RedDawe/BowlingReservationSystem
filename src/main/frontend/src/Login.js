@@ -11,20 +11,6 @@ class LoginComponent extends React.Component {
         }
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleSubmit(event) {
-        fetch('http://localhost:8080/api/v1/user/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(this.state)
-
-        })
-
-        this.props.navigate('/');
     }
 
     handleChange(event) {
@@ -34,7 +20,7 @@ class LoginComponent extends React.Component {
     render() {
         return(
             <div>
-                <form onSubmit={this.handleSubmit}>
+                <form action={'http://localhost:8080/login'} method={'POST'}>
                     <input type={"text"} value={this.state.username} onChange={this.handleChange} name={"username"} />
                     <input type={"text"} value={this.state.password} onChange={this.handleChange} name={"password"} />
 
