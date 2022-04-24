@@ -2,6 +2,7 @@ package cz.reddawe.bowlingreservationsystem.user;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +13,13 @@ public class UserConfig {
     private final AuthorityRepository authorityRepository;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserConfig(AuthorityRepository authorityRepository, RoleRepository roleRepository, UserRepository userRepository) {
+    public UserConfig(AuthorityRepository authorityRepository, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.authorityRepository = authorityRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void configureAuthorities(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
@@ -50,7 +53,7 @@ public class UserConfig {
 
     public void configureManager(Role managerRole) {
         userRepository.save(
-                new User("manager", "poet-homecoming-group-try", managerRole)
+                new User("manager", passwordEncoder.encode("poet-homecoming-group-try"), managerRole)
         );
     }
 
