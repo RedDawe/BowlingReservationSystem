@@ -44,12 +44,16 @@ public class User implements UserDetails {
     )
     private String password;
 
+    @ManyToOne(optional = false)
+    private Role role;
+
     public User() {
     }
 
-    public User(String username, String password) {
+    public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     @Override

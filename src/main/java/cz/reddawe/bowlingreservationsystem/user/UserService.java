@@ -20,12 +20,14 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -72,7 +74,9 @@ public class UserService implements UserDetailsService {
             throw new IllegalStateException(String.format("Username %s already exists", userInput.username()));
         }
 
-        User user = new User(userInput.username(), passwordEncoder.encode(userInput.password()));
+        String passwordHash = passwordEncoder.encode(userInput.password());
+        Role userRole = roleRepository.findByName("USER");
+        User user = new User(userInput.username(), passwordHash, userRole);
 
         userRepository.save(user);
     }
