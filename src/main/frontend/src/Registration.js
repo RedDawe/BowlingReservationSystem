@@ -24,7 +24,7 @@ class RegistrationComponent extends React.Component {
 
         })
 
-        this.props.navigate('/login');
+        this.props.navigate('/user/login');
     }
 
     handleChange(event) {
