@@ -17,12 +17,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors()
-                .and()
+                .cors().and()
                 .csrf().disable()
 
-                .formLogin().defaultSuccessUrl("/")
-                .and()
+                .authorizeRequests()
+                    .antMatchers("api/v1/**")
+                    .permitAll()
+                    .and()
+
+                .formLogin()
+                    .defaultSuccessUrl("/")
+                    .and()
                 .httpBasic().disable();
     }
 
