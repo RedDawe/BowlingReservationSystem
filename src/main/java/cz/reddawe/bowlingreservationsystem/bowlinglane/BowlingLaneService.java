@@ -32,7 +32,8 @@ public class BowlingLaneService {
     @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
     public List<String> removeBowlingLane(int bowlingLaneNumber) {
         BowlingLane toBeRemoved = bowlingLaneRepository.findById(bowlingLaneNumber).orElseThrow(
-                () -> new IllegalStateException(String.format("Lane %d does not exist", bowlingLaneNumber)));
+                () -> new IllegalStateException(String.format("Lane %d does not exist", bowlingLaneNumber))
+        );
         List<BowlingLane> allOtherBowlingLanes = bowlingLaneRepository.findBowlingLanesByNumberNot(bowlingLaneNumber);
 
         List<String> couldNotReassign = reservationService.reassignReservationsFromLane(
