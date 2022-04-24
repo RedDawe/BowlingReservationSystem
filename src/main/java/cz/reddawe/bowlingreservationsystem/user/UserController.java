@@ -24,14 +24,4 @@ public class UserController {
         userService.registerUser(userInput);
         return ResponseEntity.noContent().build();
     }
-
-    @PostMapping("login")
-    public void login(@RequestBody UserInput userInput) {
-        userService.login(userInput);
-    }
-
-    @PostMapping("logout")
-    public void logout() {
-        userService.logout();
-    }
 }

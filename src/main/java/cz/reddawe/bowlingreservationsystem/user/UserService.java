@@ -19,14 +19,12 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
         this.roleRepository = roleRepository;
     }
 
@@ -79,17 +77,5 @@ public class UserService implements UserDetailsService {
         User user = new User(userInput.username(), passwordHash, userRole);
 
         userRepository.save(user);
-    }
-
-    public void login(UserInput userInput) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userInput.username(), userInput.password())
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    public void logout() {
-        SecurityContextHolder.getContext().setAuthentication(null);
     }
 }
