@@ -23,19 +23,23 @@ public class UserConfig {
     }
 
     public void configureAuthorities(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
-        Authority reservationManage = new Authority("RESERVATION:MANAGE");
-        Authority bowlingLaneManage = new Authority("BOWLING_LANE:MANAGE");
+        Authority reservationCreate = new Authority("RESERVATION:CREATE");
+        Authority reservationDelete = new Authority("RESERVATION:DELETE");
 
-        userAuthorities.add(
-                reservationManage
-        );
+        Authority bowlingLaneCreate = new Authority("BOWLING_LANE:CREATE");
+        Authority bowlingLaneDelete = new Authority("BOWLING_LANE:DELETE");
+
+        userAuthorities.addAll(List.of(
+                reservationCreate, reservationDelete
+        ));
         managerAuthorities.addAll(List.of(
-                reservationManage,
-                bowlingLaneManage
+                reservationCreate, reservationDelete,
+                bowlingLaneCreate, bowlingLaneDelete
         ));
 
         authorityRepository.saveAll(List.of(
-                reservationManage, bowlingLaneManage
+                reservationCreate, reservationDelete,
+                bowlingLaneCreate, bowlingLaneDelete
         ));
     }
 
