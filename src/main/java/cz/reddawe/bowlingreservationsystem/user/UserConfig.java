@@ -39,7 +39,7 @@ public class UserConfig {
         ));
     }
 
-    public Role configureRoles(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
+    public void configureRoles(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
         Role user = new Role("USER", userAuthorities);
         Role manager = new Role("MANAGER", managerAuthorities);
 
@@ -47,13 +47,14 @@ public class UserConfig {
                 user,
                 manager
         ));
-
-        return manager;
     }
 
-    public void configureManager(Role managerRole) {
+    public void configureManager() {
+        Role managerRole = roleRepository.findByName("MANAGER");
+        String rawPassword = "poet-homecoming-group-try";
+
         userRepository.save(
-                new User("manager", passwordEncoder.encode("poet-homecoming-group-try"), managerRole)
+                new User("manager", passwordEncoder.encode(rawPassword),  managerRole)
         );
     }
 
@@ -63,7 +64,7 @@ public class UserConfig {
         List<Authority> managerAuthorities = new ArrayList<>();
 
         configureAuthorities(userAuthorities, managerAuthorities);
-        Role manager = configureRoles(userAuthorities, managerAuthorities);
-        configureManager(manager);
+        configureRoles(userAuthorities, managerAuthorities);
+        configureManager();
     }
 }
