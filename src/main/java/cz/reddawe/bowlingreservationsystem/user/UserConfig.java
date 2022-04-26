@@ -37,7 +37,6 @@ public class UserConfig {
                 reservationCreate, reservationDelete
         ));
         managerAuthorities.addAll(List.of(
-                reservationCreate, reservationDelete,
                 bowlingLaneCreate, bowlingLaneDelete
         ));
 
