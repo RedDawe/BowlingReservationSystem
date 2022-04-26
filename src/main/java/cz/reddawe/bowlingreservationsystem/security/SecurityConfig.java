@@ -30,12 +30,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                 .httpBasic().disable();
     }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-
 }
