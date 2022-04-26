@@ -11,7 +11,7 @@ function MainMenu(props) {
             <button onClick={() => navigate('/bowling-lane/add')}>Add bowling lane</button>
             <button onClick={() => navigate('/bowling-lane/remove')}>Remove bowling lane</button>
             <br/>
-            <button onClick={() => navigate('/register')}>Register</button>
+            <button onClick={() => navigate('/user/register')}>Register</button>
         </div>
     )
 }

@@ -1,11 +1,14 @@
 package cz.reddawe.bowlingreservationsystem.user;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity(name = "User")
 @Table(name = "users")
@@ -44,17 +47,26 @@ public class User implements UserDetails {
     )
     private String password;
 
+    @ManyToOne(optional = false)
+    private Role role;
+
     public User() {
     }
 
-    public User(String username, String password) {
+    public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null; // TODO: grant authorities
+        Set<SimpleGrantedAuthority> authorities = role.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+                .collect(Collectors.toSet());
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+
+        return authorities;
     }
 
     @Override

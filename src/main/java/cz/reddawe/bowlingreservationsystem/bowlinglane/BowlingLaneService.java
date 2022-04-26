@@ -2,6 +2,7 @@ package cz.reddawe.bowlingreservationsystem.bowlinglane;
 
 import cz.reddawe.bowlingreservationsystem.reservation.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class BowlingLaneService {
         this.bowlingLaneRepository = bowlingLaneRepository;
     }
 
+    @PreAuthorize("hasAuthority('BOWLING_LANE:CREATE')")
     public BowlingLane addBowlingLane(BowlingLane bowlingLane) {
         int bowlingLaneNumber = bowlingLane.getNumber();
 
@@ -27,9 +29,11 @@ public class BowlingLaneService {
         return bowlingLaneRepository.save(bowlingLane);
     }
 
+    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
     public List<String> removeBowlingLane(int bowlingLaneNumber) {
         BowlingLane toBeRemoved = bowlingLaneRepository.findById(bowlingLaneNumber).orElseThrow(
-                () -> new IllegalStateException(String.format("Lane %d does not exist", bowlingLaneNumber)));
+                () -> new IllegalStateException(String.format("Lane %d does not exist", bowlingLaneNumber))
+        );
         List<BowlingLane> allOtherBowlingLanes = bowlingLaneRepository.findBowlingLanesByNumberNot(bowlingLaneNumber);
 
         List<String> couldNotReassign = reservationService.reassignReservationsFromLane(

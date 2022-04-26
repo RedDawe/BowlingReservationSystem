@@ -3,6 +3,7 @@ package cz.reddawe.bowlingreservationsystem.reservation;
 import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLane;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -69,6 +70,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @PreAuthorize("isAuthenticated()")
     public List<ReservationWithoutUser> getMyReservations() {
         List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(
                 getCurrentUser().orElseThrow(() -> new IllegalStateException("""
@@ -103,6 +105,7 @@ public class ReservationService {
         }
     }
 
+    @PreAuthorize("hasAuthority('RESERVATION:CREATE')")
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
         throwIfNotValidReservation(reservationInput);
         User currentUser = getCurrentUser().orElseThrow(() -> new IllegalStateException("""
@@ -114,6 +117,7 @@ public class ReservationService {
         return reservationToReservationWithoutUser(savedReservation);
     }
 
+    @PreAuthorize("hasAuthority('RESERVATION:DELETE')")
     public void deleteReservation(long reservationId) {
         if (!reservationRepository.existsById(reservationId)) {
             throw new IllegalStateException(String.format("Reservation %s does not exist", reservationId));
@@ -136,6 +140,7 @@ public class ReservationService {
         return false;
     }
 
+    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
     public List<String> reassignReservationsFromLane(BowlingLane reassignFrom, List<BowlingLane> allOtherLanes) {
         List<Reservation> toBeReassigned = reservationRepository.findReservationsByBowlingLane(reassignFrom);
         List<String> couldNotReassign = new ArrayList<>();
