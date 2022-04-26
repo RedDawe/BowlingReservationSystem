@@ -1,34 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchRole } from "./Utils";
 
-function getRole() {
-    return fetch('http://localhost:8080/api/v1/user/role', {method: 'GET'})
-        .then(response => response.json())
-}
-
-function MainMenu(props) {
+function MainMenu() {
     const navigate = useNavigate();
-    const [role, setRole] = useState(() => getRole())
+
+    const [role, setRole] = useState('anonymousUser');
+    fetchRole(setRole);
 
     return (
         <div>
             <button onClick={() => navigate('/reservations/view')}>View reservations</button>
             {
                 (role === 'USER') &&
-                <div>
+                <div style={{display: 'inline-block'}}>
                     <button onClick={() => navigate('/reservation/make')}>Make reservation</button>
                     <button onClick={() => navigate('/reservation/delete')}>Delete reservation</button>
                 </div>
             }
             {
                 (role === 'MANAGER') &&
-                <div>
+                <div style={{display: 'inline-block'}}>
                     <button onClick={() => navigate('/bowling-lane/add')}>Add bowling lane</button>
                     <button onClick={() => navigate('/bowling-lane/remove')}>Remove bowling lane</button>
                 </div>
             }
-            <br/>
-            <button onClick={() => navigate('/user/register')}>Register</button>
         </div>
     )
 }
