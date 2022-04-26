@@ -2,8 +2,9 @@ package cz.reddawe.bowlingreservationsystem.user;
 
 import cz.reddawe.bowlingreservationsystem.authorization.Role;
 import cz.reddawe.bowlingreservationsystem.authorization.RoleRepository;
+import cz.reddawe.bowlingreservationsystem.user.iorecords.RoleName;
+import cz.reddawe.bowlingreservationsystem.user.iorecords.UserInput;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -93,12 +94,12 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public String getMyRoleName() {
+    public RoleName getMyRoleName() {
         Optional<User> optionalUser = getCurrentUser();
 
         if (optionalUser.isEmpty()) {
-            return "anonymousUser";
+            return new RoleName("anonymousUser");
         }
-        return optionalUser.get().getRole().getName();
+        return new RoleName(optionalUser.get().getRole().getName());
     }
 }

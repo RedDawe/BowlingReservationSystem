@@ -1,8 +1,9 @@
 package cz.reddawe.bowlingreservationsystem.user;
 
+import cz.reddawe.bowlingreservationsystem.user.iorecords.RoleName;
+import cz.reddawe.bowlingreservationsystem.user.iorecords.UserInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("role")
-    public String getMyRoleName() {
+    public RoleName getMyRoleName() {
         return userService.getMyRoleName();
     }
 }
