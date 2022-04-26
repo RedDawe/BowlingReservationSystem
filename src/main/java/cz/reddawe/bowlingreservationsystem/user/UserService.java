@@ -93,12 +93,12 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    @PreAuthorize("isAuthenticated()")
     public String getMyRoleName() {
-        User currentUser = getCurrentUser().orElseThrow(() -> new IllegalStateException("""
-                            getMyRoleName can only be called by an authorized user
-                        """));
+        Optional<User> optionalUser = getCurrentUser();
 
-        return currentUser.getRole().getName();
+        if (optionalUser.isEmpty()) {
+            return "anonymousUser";
+        }
+        return optionalUser.get().getRole().getName();
     }
 }
