@@ -22,7 +22,7 @@ class LoginComponent extends React.Component {
             <div>
                 <form action={'http://localhost:8080/login'} method={'POST'}>
                     <input type={"text"} value={this.state.username} onChange={this.handleChange} name={"username"} />
-                    <input type={"text"} value={this.state.password} onChange={this.handleChange} name={"password"} />
+                    <input type={"password"} value={this.state.password} onChange={this.handleChange} name={"password"} />
 
                     <input type={"submit"} value={"Login"} />
                 </form>
