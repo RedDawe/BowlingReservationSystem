@@ -1,6 +1,9 @@
 package cz.reddawe.bowlingreservationsystem.reservation;
 
 import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLane;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationInput;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithIsMineFlag;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithoutUser;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,9 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

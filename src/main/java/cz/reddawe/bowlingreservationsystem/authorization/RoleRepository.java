@@ -1,4 +1,4 @@
-package cz.reddawe.bowlingreservationsystem.user;
+package cz.reddawe.bowlingreservationsystem.authorization;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

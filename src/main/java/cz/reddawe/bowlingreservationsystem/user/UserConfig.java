@@ -1,5 +1,9 @@
 package cz.reddawe.bowlingreservationsystem.user;
 
+import cz.reddawe.bowlingreservationsystem.authorization.Authority;
+import cz.reddawe.bowlingreservationsystem.authorization.AuthorityRepository;
+import cz.reddawe.bowlingreservationsystem.authorization.Role;
+import cz.reddawe.bowlingreservationsystem.authorization.RoleRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
