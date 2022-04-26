@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class UserService implements UserDetailsService {
 
-    private static final String usernameRegex = "^[a-zA-Z0-9]{3,255}$";
+    private static final String usernameRegex = "^[a-zA-Z\\d@.]{3,255}$";
     private static final String passwordRegex = "^(?=.*\\d)(?=.*[a-zA-Z])[a-zA-Z\\d@$!%*#?&]{8,50}$";
 
     private final UserRepository userRepository;
@@ -53,7 +53,7 @@ public class UserService implements UserDetailsService {
     /**
      * Requirements:
      * 1. 3 to 255 characters
-     * 2. Only consists of upper and lowercase letters and digits
+     * 2. Only consists of upper and lowercase letters, digits and @.
      *
      * @param username
      * @return whether username satisfies requirements
