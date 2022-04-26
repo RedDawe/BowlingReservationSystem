@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,8 +110,14 @@ public class ReservationService {
 
     @PreAuthorize("hasAuthority('RESERVATION:DELETE')")
     public void deleteReservation(long reservationId) {
-        if (!reservationRepository.existsById(reservationId)) {
-            throw new IllegalStateException(String.format("Reservation %s does not exist", reservationId));
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new IllegalStateException(String.format("Reservation %s does not exist", reservationId))
+        );
+        Duration timeUntilReservation = Duration.between(LocalDateTime.now(), reservation.getStart());
+        if (timeUntilReservation.compareTo(Duration.ofHours(24)) < 0){
+            throw new IllegalStateException(String.format("""
+                    Cannot delete reservation %s. Reservations can only be deleted at least 24 hours
+                    before they are supposed to start""", reservationId));
         }
 
         reservationRepository.deleteById(reservationId);
