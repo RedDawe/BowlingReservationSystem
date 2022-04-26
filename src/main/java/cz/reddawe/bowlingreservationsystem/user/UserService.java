@@ -2,12 +2,17 @@ package cz.reddawe.bowlingreservationsystem.user;
 
 import cz.reddawe.bowlingreservationsystem.authorization.Role;
 import cz.reddawe.bowlingreservationsystem.authorization.RoleRepository;
+import cz.reddawe.bowlingreservationsystem.user.iorecords.RoleName;
+import cz.reddawe.bowlingreservationsystem.user.iorecords.UserInput;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -31,6 +36,18 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException(String.format("Username %s not found", username))
         );
+    }
+
+    public static Optional<User> getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal == null) throw new RuntimeException("Authentication returned null from getPrincipal");
+        if (principal.equals("anonymousUser")) return Optional.empty();
+        if (principal.getClass() != User.class) throw new RuntimeException("""
+                Authentication::getPrincipal() returned object other than "anonymousUser" or
+                cz.reddawe.bowlingreservationsystem.user.User
+                """
+        );
+        return Optional.of((User) principal);
     }
 
     /**
@@ -75,5 +92,14 @@ public class UserService implements UserDetailsService {
         User user = new User(userInput.username(), passwordHash, userRole);
 
         userRepository.save(user);
+    }
+
+    public RoleName getMyRoleName() {
+        Optional<User> optionalUser = getCurrentUser();
+
+        if (optionalUser.isEmpty()) {
+            return new RoleName("anonymousUser");
+        }
+        return new RoleName(optionalUser.get().getRole().getName());
     }
 }

@@ -1,17 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchRole } from "./Utils";
 
-function MainMenu(props) {
+function MainMenu() {
     const navigate = useNavigate();
+
+    const [role, setRole] = useState('anonymousUser');
+    fetchRole(setRole);
+
     return (
         <div>
-            <button onClick={() => navigate('/reservation/make')}>Make reservation</button>
             <button onClick={() => navigate('/reservations/view')}>View reservations</button>
-            <button onClick={() => navigate('/reservation/delete')}>Delete reservation</button>
-            <button onClick={() => navigate('/bowling-lane/add')}>Add bowling lane</button>
-            <button onClick={() => navigate('/bowling-lane/remove')}>Remove bowling lane</button>
-            <br/>
-            <button onClick={() => navigate('/user/register')}>Register</button>
+            {
+                (role === 'USER') &&
+                <div style={{display: 'inline-block'}}>
+                    <button onClick={() => navigate('/reservation/make')}>Make reservation</button>
+                    <button onClick={() => navigate('/reservation/delete')}>Delete reservation</button>
+                </div>
+            }
+            {
+                (role === 'MANAGER') &&
+                <div style={{display: 'inline-block'}}>
+                    <button onClick={() => navigate('/bowling-lane/add')}>Add bowling lane</button>
+                    <button onClick={() => navigate('/bowling-lane/remove')}>Remove bowling lane</button>
+                </div>
+            }
         </div>
     )
 }

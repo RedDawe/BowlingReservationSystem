@@ -5,6 +5,7 @@ import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationInpu
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithIsMineFlag;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithoutUser;
 import cz.reddawe.bowlingreservationsystem.user.User;
+import cz.reddawe.bowlingreservationsystem.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,18 +25,6 @@ public class ReservationService {
     @Autowired
     public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-    }
-
-    private static Optional<User> getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal == null) throw new RuntimeException("Authentication returned null from getPrincipal");
-        if (principal.equals("anonymousUser")) return Optional.empty();
-        if (principal.getClass() != User.class) throw new RuntimeException("""
-                Authentication::getPrincipal() returned object other than "anonymousUser" or
-                cz.reddawe.bowlingreservationsystem.user.User
-                """
-        );
-        return Optional.of((User) principal);
     }
 
     private static ReservationWithIsMineFlag reservationToReservationWithIsMineFlag(
@@ -65,7 +54,7 @@ public class ReservationService {
     public List<ReservationWithIsMineFlag> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
-        Optional<User> currentUser = getCurrentUser();
+        Optional<User> currentUser = UserService.getCurrentUser();
         return reservations.stream()
                 .map(reservation -> reservationToReservationWithIsMineFlag(reservation, currentUser))
                 .toList();
@@ -74,7 +63,7 @@ public class ReservationService {
     @PreAuthorize("isAuthenticated()")
     public List<ReservationWithoutUser> getMyReservations() {
         List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(
-                getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                UserService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                             getMyReservations can only be called by an authorized user
                         """))
         );
@@ -109,7 +98,7 @@ public class ReservationService {
     @PreAuthorize("hasAuthority('RESERVATION:CREATE')")
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
         throwIfNotValidReservation(reservationInput);
-        User currentUser = getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+        User currentUser = UserService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                 createReservation can only be called by an authorized user"""));
         Reservation reservation = reservationInputToReservation(reservationInput, currentUser);
 
