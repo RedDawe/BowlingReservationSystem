@@ -1,22 +1,22 @@
-package cz.reddawe.bowlingreservationsystem.user;
+package cz.reddawe.bowlingreservationsystem.authorization;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Entity(name = "Role")
-@Table(name = "roles")
-public class Role {
+@Entity(name = "Authority")
+@Table(name = "authorities")
+public class Authority {
 
     @SequenceGenerator(
-            name = "role_sequence",
-            sequenceName = "role_sequence",
+            name = "authority_sequence",
+            sequenceName = "authority_sequence",
             allocationSize = 1
     )
 
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "role_sequence"
+            generator = "authority_sequence"
     )
     @JoinColumn(
             name = "id",
@@ -33,18 +33,14 @@ public class Role {
     )
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "roles_have_authorities"
-    )
-    private List<Authority> authorities;
+    @ManyToMany(mappedBy = "authorities")
+    private List<Role> roles;
 
-    public Role() {
+    public Authority() {
     }
 
-    public Role(String name, List<Authority> authorities) {
+    public Authority(String name) {
         this.name = name;
-        this.authorities = authorities;
     }
 
     public Long getId() {
@@ -55,15 +51,7 @@ public class Role {
         return name;
     }
 
-    public List<Authority> getAuthorities() {
-        return authorities;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setAuthorities(List<Authority> authorities) {
-        this.authorities = authorities;
     }
 }

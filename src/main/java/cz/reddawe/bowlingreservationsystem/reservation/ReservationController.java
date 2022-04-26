@@ -1,11 +1,12 @@
 package cz.reddawe.bowlingreservationsystem.reservation;
 
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationInput;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithIsMineFlag;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithoutUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
