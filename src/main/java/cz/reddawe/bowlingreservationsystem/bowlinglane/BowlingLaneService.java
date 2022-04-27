@@ -20,7 +20,7 @@ public class BowlingLaneService {
     }
 
     @PreAuthorize("hasAuthority('BOWLING_LANE:CREATE')")
-    public BowlingLane addBowlingLane(BowlingLane bowlingLane) {
+    public BowlingLane createBowlingLane(BowlingLane bowlingLane) {
         int bowlingLaneNumber = bowlingLane.getNumber();
 
         if (bowlingLaneRepository.existsById(bowlingLaneNumber)) {
@@ -30,7 +30,7 @@ public class BowlingLaneService {
     }
 
     @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
-    public List<String> removeBowlingLane(int bowlingLaneNumber) {
+    public List<String> deleteBowlingLane(int bowlingLaneNumber) {
         BowlingLane toBeRemoved = bowlingLaneRepository.findById(bowlingLaneNumber).orElseThrow(
                 () -> new IllegalStateException(String.format("Lane %d does not exist", bowlingLaneNumber))
         );

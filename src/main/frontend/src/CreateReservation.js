@@ -1,6 +1,6 @@
 import React from "react";
 
-class MakeReservation extends React.Component {
+class CreateReservation extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -86,4 +86,4 @@ class MakeReservation extends React.Component {
     }
 }
 
-export default MakeReservation;
+export default CreateReservation;

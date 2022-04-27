@@ -1,6 +1,6 @@
 import React from "react";
 
-class AddBowlingLane extends React.Component {
+class CreateBowlingLane extends React.Component {
     constructor(props) {
         super(props);
         this.state = {value: ''};
@@ -11,7 +11,7 @@ class AddBowlingLane extends React.Component {
 
 
     handleSubmit(event) {
-        fetch('http://localhost:8080/api/v1/bowling-lane/add', {
+        fetch('http://localhost:8080/api/v1/bowling-lane/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -44,4 +44,4 @@ class AddBowlingLane extends React.Component {
     }
 }
 
-export default AddBowlingLane;
+export default CreateBowlingLane;

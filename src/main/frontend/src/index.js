@@ -8,9 +8,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navigation from "./Navigation";
 import MainMenu from "./MainMenu";
 
-import MakeReservation from "./MakeReservation";
-import RemoveBowlingLane from "./RemoveBowlingLane";
-import AddBowlingLane from "./AddBowlingLane";
+import CreateReservation from "./CreateReservation";
+import DeleteBowlingLane from "./DeleteBowlingLane";
+import CreateBowlingLane from "./CreateBowlingLane";
 import DeleteReservation from "./DeleteReservation";
 import ViewReservations from "./ViewReservations";
 import Registration from "./Registration";
@@ -26,11 +26,11 @@ root.render(
 
                 <Route path={'/user/register'} element={<Registration />} />
                 <Route path={'/user/login'} element={<Login />} />
-                <Route path={"/reservation/make"} element={<MakeReservation />} />
+                <Route path={"/reservation/make"} element={<CreateReservation />} />
                 <Route path={"/reservation/delete"} element={<DeleteReservation />} />
                 <Route path={"/reservations/view"} element={<ViewReservations />} />
-                <Route path={"/bowling-lane/add"} element={<AddBowlingLane />} />
-                <Route path={"/bowling-lane/remove"} element={<RemoveBowlingLane />} />
+                <Route path={"/bowling-lane/add"} element={<CreateBowlingLane />} />
+                <Route path={"/bowling-lane/remove"} element={<DeleteBowlingLane />} />
             </Routes>
       </Router>
   </React.StrictMode>,
