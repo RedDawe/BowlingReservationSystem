@@ -11,7 +11,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     @Query("FROM Reservation r WHERE r.user = ?1")
     List<Reservation> findReservationsByUser(User user);

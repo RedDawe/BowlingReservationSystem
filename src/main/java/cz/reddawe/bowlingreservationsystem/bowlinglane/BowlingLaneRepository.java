@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-interface BowlingLaneRepository extends JpaRepository<BowlingLane, Integer> {
+public interface BowlingLaneRepository extends JpaRepository<BowlingLane, Integer> {
 
     @Query("FROM BowlingLane b ORDER BY b.number")
     List<BowlingLane> findAllByOrderByNumber();

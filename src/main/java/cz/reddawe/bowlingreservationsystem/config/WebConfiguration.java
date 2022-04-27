@@ -1,4 +1,4 @@
-package cz.reddawe.bowlingreservationsystem.security;
+package cz.reddawe.bowlingreservationsystem.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
