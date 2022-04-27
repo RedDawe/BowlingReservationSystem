@@ -18,7 +18,7 @@ public class BowlingLaneController {
     }
 
     @GetMapping(path = "get")
-    public List<BowlingLane> getBowlingLanes() {
+    public List<BowlingLane> getBowlingLanesOrdered() {
         return bowlingLaneService.getBowlingLanesOrdered();
     }
 
