@@ -16,9 +16,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("FROM Reservation r WHERE r.user = ?1")
     List<Reservation> findReservationsByUser(User user);
 
-    @Query("FROM Reservation r WHERE r.bowlingLane = ?1 AND r.start < ?2 AND r.end > ?3")
-    List<Reservation> findReservationsByBowlingLaneAndStartBeforeAndEndAfter
-            (BowlingLane bowlingLane, LocalDateTime end, LocalDateTime start);
+    @Query("FROM Reservation r WHERE r.bowlingLane = ?3 AND r.start < ?2 AND r.end > ?1")
+    List<Reservation> findReservationsByOverlap(LocalDateTime start, LocalDateTime end, BowlingLane bowlingLane);
 
     @Query("FROM Reservation r WHERE r.bowlingLane = ?1")
     List<Reservation> findReservationsByBowlingLane(BowlingLane bowlingLane);

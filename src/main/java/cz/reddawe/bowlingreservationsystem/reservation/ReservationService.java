@@ -75,14 +75,12 @@ public class ReservationService {
                 .toList();
     }
 
-    private boolean overlaps(BowlingLane bowlingLane, LocalDateTime start, LocalDateTime end) {
-        return reservationRepository.findReservationsByBowlingLaneAndStartBeforeAndEndAfter(bowlingLane, end, start)
-                .size() > 0;
-    }
-
     private boolean overlaps(ReservationInput reservationInput) {
-        return overlaps(reservationInput.bowlingLane(),
-                reservationInput.start(), reservationInput.end());
+        return reservationRepository
+                .findReservationsByOverlap(reservationInput.start(),
+                        reservationInput.end(), reservationInput.bowlingLane()
+                )
+                .size() > 0;
     }
 
     private void throwIfNotValidReservation(ReservationInput reservationInput) {
@@ -118,7 +116,7 @@ public class ReservationService {
         );
         Duration timeUntilReservation = Duration.between(LocalDateTime.now(), reservation.getStart());
 
-        if (timeUntilReservation.compareTo(Duration.ofHours(24)) < 0){
+        if (timeUntilReservation.compareTo(Duration.ofHours(24)) < 0) {
             throw new ReservationDeletionTimeExpiredException(reservation.getStart().toString());
         }
 
