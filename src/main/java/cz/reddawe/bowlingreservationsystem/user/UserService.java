@@ -2,6 +2,9 @@ package cz.reddawe.bowlingreservationsystem.user;
 
 import cz.reddawe.bowlingreservationsystem.authorization.Role;
 import cz.reddawe.bowlingreservationsystem.authorization.RoleRepository;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.PasswordValidationException;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceAlreadyExistsException;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.UsernameValidationException;
 import cz.reddawe.bowlingreservationsystem.user.iorecords.RoleName;
 import cz.reddawe.bowlingreservationsystem.user.iorecords.UserInput;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,13 +85,13 @@ public class UserService implements UserDetailsService {
 
     public void registerUser(UserInput userInput) {
         if (!validateUsername(userInput.username())) {
-            throw new IllegalArgumentException(String.format("Username %s is not valid", userInput.username()));
+            throw new UsernameValidationException(userInput.username());
         }
         if (!validatePassword(userInput.password())) {
-            throw new IllegalArgumentException("Password is not valid");
+            throw new PasswordValidationException();
         }
         if (userRepository.findByUsername(userInput.username()).isPresent()) {
-            throw new IllegalStateException(String.format("Username %s already exists", userInput.username()));
+            throw new ResourceAlreadyExistsException(userInput.username());
         }
 
         String passwordHash = passwordEncoder.encode(userInput.password());

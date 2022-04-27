@@ -2,9 +2,9 @@ package cz.reddawe.bowlingreservationsystem.exceptions;
 
 import java.time.ZonedDateTime;
 
-public record ResourceExceptionResponse(
+public record ExceptionResponse(
+        String error,
         String reason,
-        String resource,
         ZonedDateTime timestamp
 ) {
 }

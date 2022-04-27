@@ -1,5 +1,7 @@
 package cz.reddawe.bowlingreservationsystem.bowlinglane;
 
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceAlreadyExistsException;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceDoesNotExistException;
 import cz.reddawe.bowlingreservationsystem.reservation.Reservation;
 import cz.reddawe.bowlingreservationsystem.reservation.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class BowlingLaneService {
         int bowlingLaneNumber = bowlingLane.getNumber();
 
         if (bowlingLaneRepository.existsById(bowlingLaneNumber)) {
-            throw new IllegalStateException(String.format("Lane %d already exists", bowlingLaneNumber));
+            throw new ResourceAlreadyExistsException(String.valueOf(bowlingLaneNumber));
         }
         return bowlingLaneRepository.save(bowlingLane);
     }
@@ -55,7 +57,7 @@ public class BowlingLaneService {
     @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
     public List<String> deleteBowlingLane(int bowlingLaneNumber) {
         BowlingLane toBeRemoved = bowlingLaneRepository.findById(bowlingLaneNumber).orElseThrow(
-                () -> new IllegalStateException(String.format("Lane %d does not exist", bowlingLaneNumber))
+                () -> new ResourceDoesNotExistException(String.valueOf(bowlingLaneNumber))
         );
 
         List<String> couldNotReassign = moveReservationsFromBowlingLane(toBeRemoved);
