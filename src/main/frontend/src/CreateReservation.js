@@ -32,7 +32,7 @@ class CreateReservation extends React.Component {
         const base64 = require('base-64');
         const username = 'manager';
         const password = 'password1';
-        fetch('http://localhost:8080/api/v1/reservation/create', {
+        fetch('/api/v1/reservation/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

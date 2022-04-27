@@ -50,7 +50,7 @@ class ViewReservations extends React.Component {
     }
 
     fetchBowlingLanes() {
-        fetch('http://localhost:8080/api/v1/bowling-lane/get')
+        fetch('/api/v1/bowling-lane/get')
             .then(response => response.json())
             .then(bowlingLanes => {
                 this.setState({bowlingLanes: bowlingLanes});
@@ -58,7 +58,7 @@ class ViewReservations extends React.Component {
     }
 
     fetchReservations() {
-        fetch('http://localhost:8080/api/v1/reservation/get-all')
+        fetch('/api/v1/reservation/get-all')
             .then(response => response.json())
             .then(reservations => {
                 this.setState({response: reservations}, () => this.addEvents());

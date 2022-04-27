@@ -11,7 +11,7 @@ class CreateBowlingLane extends React.Component {
 
 
     handleSubmit(event) {
-        fetch('http://localhost:8080/api/v1/bowling-lane/create', {
+        fetch('/api/v1/bowling-lane/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

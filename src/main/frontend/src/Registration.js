@@ -15,7 +15,7 @@ class RegistrationComponent extends React.Component {
     }
 
     handleSubmit(event) {
-        fetch('http://localhost:8080/api/v1/user/register', {
+        fetch('/api/v1/user/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

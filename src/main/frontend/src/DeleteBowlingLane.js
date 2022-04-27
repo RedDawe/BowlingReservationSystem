@@ -11,7 +11,7 @@ class DeleteBowlingLane extends React.Component{
 
 
     handleSubmit(event) {
-        fetch('http://localhost:8080/api/v1/bowling-lane/delete/' + this.state.value, {
+        fetch('/api/v1/bowling-lane/delete/' + this.state.value, {
             method: 'DELETE'
         })
             .then(response => {
