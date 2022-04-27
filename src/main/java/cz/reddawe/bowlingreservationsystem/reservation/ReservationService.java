@@ -66,7 +66,7 @@ public class ReservationService {
     public List<ReservationWithoutUser> getMyReservations() {
         List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(
                 UserService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
-                            getMyReservations can only be called by an authorized user
+                            getMyReservations can only be called by an authenticated user
                         """))
         );
 
@@ -99,7 +99,7 @@ public class ReservationService {
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
         throwIfNotValidReservation(reservationInput);
         User currentUser = UserService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
-                createReservation can only be called by an authorized user"""));
+                createReservation can only be called by an authenticated user"""));
         Reservation reservation = reservationInputToReservation(reservationInput, currentUser);
 
         Reservation savedReservation = reservationRepository.save(reservation);
