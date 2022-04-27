@@ -123,32 +123,26 @@ public class ReservationService {
         reservationRepository.deleteById(reservationId);
     }
 
-    @Transactional
-    protected boolean reassignReservation(Reservation reservation, List<BowlingLane> allOtherLanes) {
-        for (BowlingLane bowlingLane : allOtherLanes) {
-            if (overlaps(bowlingLane, reservation.getStart(), reservation.getEnd())) {
-                continue;
-            }
-
-            reservation.setBowlingLane(bowlingLane);
-            return true;
-        }
-
-        return false;
+    public List<Reservation> getReservationsByLane(BowlingLane bowlingLane) {
+        return reservationRepository.findReservationsByBowlingLane(bowlingLane);
     }
 
     @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
-    public List<String> reassignReservationsFromLane(BowlingLane reassignFrom, List<BowlingLane> allOtherLanes) {
-        List<Reservation> toBeReassigned = reservationRepository.findReservationsByBowlingLane(reassignFrom);
-        List<String> couldNotReassign = new ArrayList<>();
-
-        for (Reservation reservation : toBeReassigned) {
-            if (!reassignReservation(reservation, allOtherLanes)) {
-                couldNotReassign.add(reservation.toString());
-                reservationRepository.delete(reservation);
-            }
+    public void forcefullyDeleteReservation(long reservationId) {
+        if (!reservationRepository.existsById(reservationId)) {
+            throw new IllegalStateException(String.format("Reservation %s does not exist", reservationId));
         }
 
-        return couldNotReassign;
+        reservationRepository.deleteById(reservationId);
+    }
+
+    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
+    @Transactional
+    public void changeBowlingLane(long reservationId, BowlingLane bowlingLane) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new IllegalStateException(String.format("Reservation %s does not exist", reservationId))
+        );
+
+        reservation.setBowlingLane(bowlingLane);
     }
 }
