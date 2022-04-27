@@ -90,6 +90,10 @@ public class ReservationService {
             throw new ReservationValidationException("peopleComing");
         }
 
+        if (reservationInput.start().compareTo(reservationInput.end()) >= 0) {
+            throw new ReservationValidationException("start>=end");
+        }
+
         if (overlaps(reservationInput)) {
             throw new ReservationValidationException("overlap");
         }
