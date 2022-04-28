@@ -13,7 +13,7 @@ class DeleteReservation extends React.Component {
     }
 
     handleClick(event) {
-        fetch('http://localhost:8080/api/v1/reservation/delete/'
+        fetch('/api/v1/reservation/delete/'
             + event.target.getAttribute('data-key'), {
             method: 'DELETE'
         }).then(response => {
@@ -26,7 +26,7 @@ class DeleteReservation extends React.Component {
         const username = 'manager';
         const password = 'password1';
 
-        fetch('http://localhost:8080/api/v1/reservation/get-my', {
+        fetch('/api/v1/reservation/get-my', {
             headers: {
                 Authorization: 'Basic ' + base64.encode(username + ":" + password)
             }

@@ -1,9 +1,11 @@
-package cz.reddawe.bowlingreservationsystem.user;
+package cz.reddawe.bowlingreservationsystem.config;
 
 import cz.reddawe.bowlingreservationsystem.authorization.Authority;
 import cz.reddawe.bowlingreservationsystem.authorization.AuthorityRepository;
 import cz.reddawe.bowlingreservationsystem.authorization.Role;
 import cz.reddawe.bowlingreservationsystem.authorization.RoleRepository;
+import cz.reddawe.bowlingreservationsystem.user.User;
+import cz.reddawe.bowlingreservationsystem.user.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,14 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class UserConfig {
+public class AuthorizationConfiguration {
 
     private final AuthorityRepository authorityRepository;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserConfig(AuthorityRepository authorityRepository, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthorizationConfiguration(AuthorityRepository authorityRepository, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.authorityRepository = authorityRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;

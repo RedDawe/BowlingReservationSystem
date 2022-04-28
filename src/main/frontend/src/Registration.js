@@ -15,7 +15,7 @@ class RegistrationComponent extends React.Component {
     }
 
     handleSubmit(event) {
-        fetch('http://localhost:8080/api/v1/user/register', {
+        fetch('/api/v1/user/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ class RegistrationComponent extends React.Component {
             <div>
                 <form onSubmit={this.handleSubmit}>
                     <input type={"text"} value={this.state.username} onChange={this.handleChange} name={"username"} />
-                    <input type={"text"} value={this.state.password} onChange={this.handleChange} name={"password"} />
+                    <input type={"password"} value={this.state.password} onChange={this.handleChange} name={"password"} />
 
                     <input type={"submit"} value={"Register"} />
                 </form>

@@ -2,9 +2,13 @@ package cz.reddawe.bowlingreservationsystem.user;
 
 import cz.reddawe.bowlingreservationsystem.authorization.Role;
 import cz.reddawe.bowlingreservationsystem.authorization.RoleRepository;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.PasswordValidationException;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceAlreadyExistsException;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.UsernameValidationException;
 import cz.reddawe.bowlingreservationsystem.user.iorecords.RoleName;
 import cz.reddawe.bowlingreservationsystem.user.iorecords.UserInput;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,7 +21,7 @@ import java.util.Optional;
 @Service
 public class UserService implements UserDetailsService {
 
-    private static final String usernameRegex = "^[a-zA-Z0-9]{3,255}$";
+    private static final String usernameRegex = "^[a-zA-Z\\d@.]{3,255}$";
     private static final String passwordRegex = "^(?=.*\\d)(?=.*[a-zA-Z])[a-zA-Z\\d@$!%*#?&]{8,50}$";
 
     private final UserRepository userRepository;
@@ -39,7 +43,10 @@ public class UserService implements UserDetailsService {
     }
 
     public static Optional<User> getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) return Optional.empty();
+
+        Object principal = authentication.getPrincipal();
         if (principal == null) throw new RuntimeException("Authentication returned null from getPrincipal");
         if (principal.equals("anonymousUser")) return Optional.empty();
         if (principal.getClass() != User.class) throw new RuntimeException("""
@@ -53,7 +60,7 @@ public class UserService implements UserDetailsService {
     /**
      * Requirements:
      * 1. 3 to 255 characters
-     * 2. Only consists of upper and lowercase letters and digits
+     * 2. Only consists of upper and lowercase letters, digits and @.
      *
      * @param username
      * @return whether username satisfies requirements
@@ -78,13 +85,13 @@ public class UserService implements UserDetailsService {
 
     public void registerUser(UserInput userInput) {
         if (!validateUsername(userInput.username())) {
-            throw new IllegalArgumentException(String.format("Username %s is not valid", userInput.username()));
+            throw new UsernameValidationException(userInput.username());
         }
         if (!validatePassword(userInput.password())) {
-            throw new IllegalArgumentException("Password is not valid");
+            throw new PasswordValidationException();
         }
         if (userRepository.findByUsername(userInput.username()).isPresent()) {
-            throw new IllegalStateException(String.format("Username %s already exists", userInput.username()));
+            throw new ResourceAlreadyExistsException(userInput.username());
         }
 
         String passwordHash = passwordEncoder.encode(userInput.password());

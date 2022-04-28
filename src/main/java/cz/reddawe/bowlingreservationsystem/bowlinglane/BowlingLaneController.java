@@ -18,17 +18,17 @@ public class BowlingLaneController {
     }
 
     @GetMapping(path = "get")
-    public List<BowlingLane> getBowlingLanes() {
+    public List<BowlingLane> getBowlingLanesOrdered() {
         return bowlingLaneService.getBowlingLanesOrdered();
     }
 
-    @PostMapping(path = "add")
-    public ResponseEntity<BowlingLane> addBowlingLane(@RequestBody BowlingLane bowlingLane) {
-        return ResponseEntity.ok().body(bowlingLaneService.addBowlingLane(bowlingLane));
+    @PostMapping(path = "create")
+    public ResponseEntity<BowlingLane> createBowlingLane(@RequestBody BowlingLane bowlingLane) {
+        return ResponseEntity.ok().body(bowlingLaneService.createBowlingLane(bowlingLane));
     }
 
-    @DeleteMapping(path = "remove/{number}")
-    public List<String> removeBowlingLane(@PathVariable("number") int number) {
-        return bowlingLaneService.removeBowlingLane(number);
+    @DeleteMapping(path = "delete/{number}")
+    public List<String> deleteBowlingLane(@PathVariable("number") int number) {
+        return bowlingLaneService.deleteBowlingLane(number);
     }
 }

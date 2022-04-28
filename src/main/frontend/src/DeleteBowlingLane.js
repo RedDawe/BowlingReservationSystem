@@ -1,6 +1,6 @@
 import React from 'react';
 
-class RemoveBowlingLane extends React.Component{
+class DeleteBowlingLane extends React.Component{
     constructor(props) {
         super(props);
         this.state = {value: '', couldNotReassign: []};
@@ -11,7 +11,7 @@ class RemoveBowlingLane extends React.Component{
 
 
     handleSubmit(event) {
-        fetch('http://localhost:8080/api/v1/bowling-lane/remove/' + this.state.value, {
+        fetch('/api/v1/bowling-lane/delete/' + this.state.value, {
             method: 'DELETE'
         })
             .then(response => {
@@ -59,4 +59,4 @@ class RemoveBowlingLane extends React.Component{
     }
 }
 
-export default RemoveBowlingLane;
+export default DeleteBowlingLane;

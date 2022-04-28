@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {fetchRole} from "./Utils";
 
 function handleLogout(navigate) {
-    fetch('http://localhost:8080/logout', {
+    fetch('/logout', {
         method: 'POST',
     })
 

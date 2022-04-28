@@ -1,10 +1,14 @@
 package cz.reddawe.bowlingreservationsystem.bowlinglane;
 
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceAlreadyExistsException;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceDoesNotExistException;
+import cz.reddawe.bowlingreservationsystem.reservation.Reservation;
 import cz.reddawe.bowlingreservationsystem.reservation.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -20,24 +24,43 @@ public class BowlingLaneService {
     }
 
     @PreAuthorize("hasAuthority('BOWLING_LANE:CREATE')")
-    public BowlingLane addBowlingLane(BowlingLane bowlingLane) {
+    public BowlingLane createBowlingLane(BowlingLane bowlingLane) {
         int bowlingLaneNumber = bowlingLane.getNumber();
 
         if (bowlingLaneRepository.existsById(bowlingLaneNumber)) {
-            throw new IllegalStateException(String.format("Lane %d already exists", bowlingLaneNumber));
+            throw new ResourceAlreadyExistsException(String.valueOf(bowlingLaneNumber));
         }
         return bowlingLaneRepository.save(bowlingLane);
     }
 
-    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
-    public List<String> removeBowlingLane(int bowlingLaneNumber) {
-        BowlingLane toBeRemoved = bowlingLaneRepository.findById(bowlingLaneNumber).orElseThrow(
-                () -> new IllegalStateException(String.format("Lane %d does not exist", bowlingLaneNumber))
-        );
-        List<BowlingLane> allOtherBowlingLanes = bowlingLaneRepository.findBowlingLanesByNumberNot(bowlingLaneNumber);
+    private List<String> moveReservationsFromBowlingLane(BowlingLane toBeRemoved) {
+        List<String> couldNotReassign = new LinkedList<>();
+        List<Reservation> reservationsOnToBeRemovedBowlingLane = reservationService.getReservationsByLane(toBeRemoved);
 
-        List<String> couldNotReassign = reservationService.reassignReservationsFromLane(
-                toBeRemoved, allOtherBowlingLanes);
+        for (Reservation reservation : reservationsOnToBeRemovedBowlingLane) {
+
+            List<BowlingLane> emptyLanesDuringReservation = bowlingLaneRepository.findAlternativeBowlingLaneFor(
+                    reservation.getStart(), reservation.getEnd(), toBeRemoved
+            );
+
+            if (emptyLanesDuringReservation.size() == 0) {
+                couldNotReassign.add(reservation.toString());
+                reservationService.forcefullyDeleteReservation(reservation.getId());
+                continue;
+            }
+            reservationService.changeBowlingLane(reservation.getId(), emptyLanesDuringReservation.get(0));
+        }
+
+        return couldNotReassign;
+    }
+
+    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
+    public List<String> deleteBowlingLane(int bowlingLaneNumber) {
+        BowlingLane toBeRemoved = bowlingLaneRepository.findById(bowlingLaneNumber).orElseThrow(
+                () -> new ResourceDoesNotExistException(String.valueOf(bowlingLaneNumber))
+        );
+
+        List<String> couldNotReassign = moveReservationsFromBowlingLane(toBeRemoved);
 
         bowlingLaneRepository.deleteById(bowlingLaneNumber);
         return couldNotReassign;
