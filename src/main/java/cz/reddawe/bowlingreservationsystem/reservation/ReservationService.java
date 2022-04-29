@@ -23,10 +23,12 @@ import java.util.Optional;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final UserService userService;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, UserService userService) {
         this.reservationRepository = reservationRepository;
+        this.userService = userService;
     }
 
     private static ReservationWithIsMineFlag reservationToReservationWithIsMineFlag(
@@ -56,7 +58,7 @@ public class ReservationService {
     public List<ReservationWithIsMineFlag> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
-        Optional<User> currentUser = UserService.getCurrentUser();
+        Optional<User> currentUser = userService.getCurrentUser();
         return reservations.stream()
                 .map(reservation -> reservationToReservationWithIsMineFlag(reservation, currentUser))
                 .toList();
@@ -65,7 +67,7 @@ public class ReservationService {
     @PreAuthorize("isAuthenticated()")
     public List<ReservationWithoutUser> getMyReservations() {
         List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(
-                UserService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                             getMyReservations can only be called by an authenticated user
                         """))
         );
@@ -100,7 +102,7 @@ public class ReservationService {
     @PreAuthorize("hasAuthority('RESERVATION:CREATE')")
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
         throwIfNotValidReservation(reservationInput);
-        User currentUser = UserService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+        User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                 createReservation can only be called by an authenticated user"""));
         Reservation reservation = reservationInputToReservation(reservationInput, currentUser);
 

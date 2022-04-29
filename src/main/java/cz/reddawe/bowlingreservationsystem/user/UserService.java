@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public static Optional<User> getCurrentUser() {
+    public Optional<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) return Optional.empty();
 
