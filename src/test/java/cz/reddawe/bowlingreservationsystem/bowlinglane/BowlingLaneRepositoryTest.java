@@ -97,7 +97,7 @@ class BowlingLaneRepositoryTest {
         alternative = underTest.save(alternative);
 
         reservationRepository.save(new Reservation(LocalDateTime.now(), LocalDateTime.now().plusHours(1), 1,
-                userRepository.getById(1L), alternative));
+                userRepository.findByUsername("username").get(), alternative));
 
         // when
         List<BowlingLane> result = underTest.findAlternativeBowlingLaneFor(

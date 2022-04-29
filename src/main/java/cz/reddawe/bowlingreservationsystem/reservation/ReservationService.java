@@ -124,27 +124,4 @@ public class ReservationService {
 
         reservationRepository.deleteById(reservationId);
     }
-
-    public List<Reservation> getReservationsByLane(BowlingLane bowlingLane) {
-        return reservationRepository.findReservationsByBowlingLane(bowlingLane);
-    }
-
-    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
-    public void forcefullyDeleteReservation(long reservationId) {
-        if (!reservationRepository.existsById(reservationId)) {
-            throw new IllegalStateException(String.format("Reservation %s does not exist", reservationId));
-        }
-
-        reservationRepository.deleteById(reservationId);
-    }
-
-    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
-    @Transactional
-    public void changeBowlingLane(long reservationId, BowlingLane bowlingLane) {
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
-                () -> new IllegalStateException(String.format("Reservation %s does not exist", reservationId))
-        );
-
-        reservation.setBowlingLane(bowlingLane);
-    }
 }

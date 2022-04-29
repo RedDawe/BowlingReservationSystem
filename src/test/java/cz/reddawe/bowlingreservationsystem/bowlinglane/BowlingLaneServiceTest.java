@@ -3,6 +3,7 @@ package cz.reddawe.bowlingreservationsystem.bowlinglane;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceAlreadyExistsException;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceDoesNotExistException;
 import cz.reddawe.bowlingreservationsystem.reservation.Reservation;
+import cz.reddawe.bowlingreservationsystem.reservation.ReservationInternalService;
 import cz.reddawe.bowlingreservationsystem.reservation.ReservationService;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,14 +30,14 @@ import static org.mockito.Mockito.verify;
 class BowlingLaneServiceTest {
 
     @Mock
-    private ReservationService reservationService;
+    private ReservationInternalService reservationInternalService;
     @Mock
     private BowlingLaneRepository bowlingLaneRepository;
     private BowlingLaneService underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new BowlingLaneService(reservationService, bowlingLaneRepository);
+        underTest = new BowlingLaneService(reservationInternalService, bowlingLaneRepository);
     }
 
     @Test
@@ -96,7 +97,7 @@ class BowlingLaneServiceTest {
         ReflectionTestUtils.setField(cannotReassignReservation, "id", 2L);
 
         given(bowlingLaneRepository.findById(1)).willReturn(Optional.of(toBeRemoved));
-        given(reservationService.getReservationsByLane(toBeRemoved)).willReturn(List.of(
+        given(reservationInternalService.getReservationsByLane(toBeRemoved)).willReturn(List.of(
                 shouldReassignReservation, cannotReassignReservation
         ));
 
@@ -111,13 +112,13 @@ class BowlingLaneServiceTest {
         // then
         ArgumentCaptor<Long> shouldReassignIdArgumentCaptor = ArgumentCaptor.forClass(Long.class);
         ArgumentCaptor<BowlingLane> bowlingLaneArgumentCaptor = ArgumentCaptor.forClass(BowlingLane.class);
-        verify(reservationService).changeBowlingLane(shouldReassignIdArgumentCaptor.capture(),
+        verify(reservationInternalService).changeBowlingLane(shouldReassignIdArgumentCaptor.capture(),
                 bowlingLaneArgumentCaptor.capture());
         assertThat(shouldReassignIdArgumentCaptor.getValue()).isEqualTo(1);
         assertThat(bowlingLaneArgumentCaptor.getValue()).isEqualTo(alternative);
 
         ArgumentCaptor<Long> cannotReassignIdArgumentCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(reservationService).forcefullyDeleteReservation(cannotReassignIdArgumentCaptor.capture());
+        verify(reservationInternalService).forcefullyDeleteReservation(cannotReassignIdArgumentCaptor.capture());
         assertThat(cannotReassignIdArgumentCaptor.getValue()).isEqualTo(2);
 
         assertThat(result).asList().containsExactlyInAnyOrder(cannotReassignReservation.toString());
