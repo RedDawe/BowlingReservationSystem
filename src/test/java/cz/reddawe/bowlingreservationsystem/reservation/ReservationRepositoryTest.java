@@ -9,6 +9,7 @@ import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLaneRepository;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import cz.reddawe.bowlingreservationsystem.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -40,27 +41,18 @@ class ReservationRepositoryTest {
         Authority bowlingLaneCreate = new Authority("BOWLING_LANE:CREATE");
         Authority bowlingLaneDelete = new Authority("BOWLING_LANE:DELETE");
 
-        authorityRepository.saveAll(List.of(
-                reservationCreate, reservationDelete,
-                bowlingLaneCreate, bowlingLaneDelete
-        ));
+        authorityRepository.saveAll(List.of(reservationCreate, reservationDelete, bowlingLaneCreate,
+                bowlingLaneDelete));
 
-        Role user = new Role("USER", List.of(
-                reservationCreate, reservationDelete
-        ));
-        Role manager = new Role("MANAGER", List.of(
-                bowlingLaneCreate, bowlingLaneDelete
-        ));
+        Role user = new Role("USER", List.of(reservationCreate, reservationDelete));
+        Role manager = new Role("MANAGER", List.of(bowlingLaneCreate, bowlingLaneDelete));
 
-        roleRepository.saveAll(List.of(
-                user,
-                manager
-        ));
+        roleRepository.saveAll(List.of(user, manager));
     }
 
     @Test
-    void itShouldFindReservationsByUser() {
-        //given
+    void itShouldFindReservationByUser() {
+        // given
         User user = new User("username", "password1", roleRepository.findByName("USER"));
         user = userRepository.save(user);
 
@@ -72,18 +64,84 @@ class ReservationRepositoryTest {
         Reservation reservation = new Reservation(start, end, 1, user, bowlingLane);
         underTest.save(reservation);
 
-        //when
+        // when
         List<Reservation> reservationsByUser = underTest.findReservationsByUser(user);
 
-        //then
+        // then
         assertThat(reservationsByUser).asList().containsExactly(reservation);
     }
 
     @Test
+    void itShouldNotFindReservationByUser() {
+        // given
+        User user1 = new User("username1", "password1", roleRepository.findByName("USER"));
+        user1 = userRepository.save(user1);
+        User user2 = new User("username2", "password1", roleRepository.findByName("USER"));
+        user2 = userRepository.save(user2);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        LocalDateTime end = LocalDateTime.of(3000, 1, 1, 9, 0);
+        Reservation reservation = new Reservation(start, end, 1, user1, bowlingLane);
+        underTest.save(reservation);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByUser(user2);
+
+        // then
+        assertThat(reservationsByUser).asList().isEmpty();
+    }
+
+    @Test
+    void itShouldFindReservationsByUser() {
+        // given
+        User user1 = new User("username1", "password1", roleRepository.findByName("USER"));
+        user1 = userRepository.save(user1);
+        User user2 = new User("username2", "password1", roleRepository.findByName("USER"));
+        user2 = userRepository.save(user2);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 9, 0);
+        Reservation reservation1a = new Reservation(start, end, 1, user1, bowlingLane);
+        underTest.save(reservation1a);
+
+        start = LocalDateTime.of(3000, 2, 1, 8, 0);
+        end = LocalDateTime.of(3000, 2, 1, 9, 0);
+        Reservation reservation1b = new Reservation(start, end, 1, user1, bowlingLane);
+        underTest.save(reservation1b);
+
+        start = LocalDateTime.of(3000, 3, 1, 8, 0);
+        end = LocalDateTime.of(3000, 3, 1, 9, 0);
+        Reservation reservation2a = new Reservation(start, end, 1, user2, bowlingLane);
+        underTest.save(reservation2a);
+
+        start = LocalDateTime.of(3000, 4, 1, 8, 0);
+        end = LocalDateTime.of(3000, 4, 1, 9, 0);
+        Reservation reservation2b = new Reservation(start, end, 1, user2, bowlingLane);
+        underTest.save(reservation2b);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByUser(user1);
+
+        // then
+        assertThat(reservationsByUser).asList().containsExactlyInAnyOrder(reservation1a, reservation1b);
+    }
+
+    @Test
+    @Disabled
     void findReservationsByOverlap() {
     }
 
     @Test
+    @Disabled
     void findReservationsByBowlingLane() {
     }
 }
