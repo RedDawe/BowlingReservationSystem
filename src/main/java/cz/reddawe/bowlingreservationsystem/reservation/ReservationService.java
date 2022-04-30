@@ -1,8 +1,8 @@
 package cz.reddawe.bowlingreservationsystem.reservation;
 
-import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLane;
+import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLaneService;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ReservationDeletionTimeExpiredException;
-import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ReservationValidationException;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ReservationInvalidException;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceDoesNotExistException;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationInput;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithIsMineFlag;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,11 +23,13 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final UserService userService;
+    private final BowlingLaneService bowlingLaneService;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository, UserService userService) {
+    public ReservationService(ReservationRepository reservationRepository, UserService userService, BowlingLaneService bowlingLaneService) {
         this.reservationRepository = reservationRepository;
         this.userService = userService;
+        this.bowlingLaneService = bowlingLaneService;
     }
 
     private static ReservationWithIsMineFlag reservationToReservationWithIsMineFlag(
@@ -86,16 +87,20 @@ public class ReservationService {
     }
 
     private void throwIfNotValidReservation(ReservationInput reservationInput) {
+        if (!bowlingLaneService.doesBowlingLaneExist(reservationInput.bowlingLane().getNumber())) {
+            throw new ReservationInvalidException("bowlingLane");
+        }
+
         if (reservationInput.peopleComing() < 1) {
-            throw new ReservationValidationException("peopleComing");
+            throw new ReservationInvalidException("peopleComing");
         }
 
         if (reservationInput.start().compareTo(reservationInput.end()) >= 0) {
-            throw new ReservationValidationException("start>=end");
+            throw new ReservationInvalidException("start>=end");
         }
 
         if (overlaps(reservationInput)) {
-            throw new ReservationValidationException("overlap");
+            throw new ReservationInvalidException("overlap");
         }
     }
 

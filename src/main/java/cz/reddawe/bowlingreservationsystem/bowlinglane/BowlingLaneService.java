@@ -71,4 +71,8 @@ public class BowlingLaneService {
     public List<BowlingLane> getBowlingLanesOrdered() {
         return bowlingLaneRepository.findAllByOrderByNumber();
     }
+
+    public boolean doesBowlingLaneExist(int bowlingLaneNumber) {
+        return bowlingLaneRepository.existsById(bowlingLaneNumber);
+    }
 }
