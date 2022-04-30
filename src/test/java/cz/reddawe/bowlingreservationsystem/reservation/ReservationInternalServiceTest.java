@@ -3,21 +3,18 @@ package cz.reddawe.bowlingreservationsystem.reservation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-class ReservationServiceTest {
+
+class ReservationInternalServiceTest {
 
     @Test
-    void getAllReservations() {
+    void getReservationsByLane() {
     }
 
     @Test
-    void getMyReservations() {
+    void forcefullyDeleteReservation() {
     }
 
     @Test
-    void createReservation() {
-    }
-
-    @Test
-    void deleteReservation() {
+    void changeBowlingLane() {
     }
 }

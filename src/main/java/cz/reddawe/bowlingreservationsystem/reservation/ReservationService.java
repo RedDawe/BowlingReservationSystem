@@ -68,11 +68,10 @@ public class ReservationService {
 
     @PreAuthorize("isAuthenticated()")
     public List<ReservationWithoutUser> getMyReservations() {
-        List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(
-                userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
-                            getMyReservations can only be called by an authenticated user
-                        """))
-        );
+        User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                    getMyReservations can only be called by an authenticated user"""));
+
+        List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(currentUser);
 
         return reservationsByUser.stream()
                 .map(ReservationService::reservationToReservationWithoutUser)
