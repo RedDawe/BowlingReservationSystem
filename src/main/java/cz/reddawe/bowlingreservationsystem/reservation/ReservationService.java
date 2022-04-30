@@ -4,6 +4,7 @@ import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLaneService;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ReservationDeletionTimeExpiredException;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ReservationInvalidException;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceDoesNotExistException;
+import cz.reddawe.bowlingreservationsystem.exceptions.forbidden.ForbiddenException;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationInput;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithIsMineFlag;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithoutUser;
@@ -116,16 +117,29 @@ public class ReservationService {
         return reservationToReservationWithoutUser(savedReservation);
     }
 
-    @PreAuthorize("hasAuthority('RESERVATION:DELETE')")
-    public void deleteReservation(long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
-                () -> new ResourceDoesNotExistException(String.valueOf(reservationId))
-        );
+    private void throwIfNotAuthorizedToDelete(Reservation reservation) {
+        User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                deleteReservation can only be called by an authenticated user"""));
+
+        if (!currentUser.equals(reservation.getUser())) {
+            throw new ForbiddenException("You attempted to delete someone else's reservation");
+        }
+
+
         Duration timeUntilReservation = Duration.between(LocalDateTime.now(), reservation.getStart());
 
         if (timeUntilReservation.compareTo(Duration.ofHours(24)) < 0) {
             throw new ReservationDeletionTimeExpiredException(reservation.getStart().toString());
         }
+    }
+
+    @PreAuthorize("hasAuthority('RESERVATION:DELETE')")
+    public void deleteReservation(long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new ResourceDoesNotExistException(String.valueOf(reservationId))
+        );
+
+        throwIfNotAuthorizedToDelete(reservation);
 
         reservationRepository.deleteById(reservationId);
     }
