@@ -9,7 +9,6 @@ import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLaneRepository;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import cz.reddawe.bowlingreservationsystem.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -136,12 +135,254 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    @Disabled
-    void findReservationsByOverlap() {
+    void itShouldNotFindReservationsByOverlap() {
+        // given
+        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 8, 30);
+        Reservation reservation1 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation1);
+
+        start = LocalDateTime.of(3000, 1, 1, 10, 0);
+        end = LocalDateTime.of(3000, 1, 1, 11, 0);
+        Reservation reservation2 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation2);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByOverlap(
+                LocalDateTime.of(3000, 1, 1, 12, 59),
+                LocalDateTime.of(3000, 1, 1, 18, 0),
+                bowlingLane
+        );
+
+        // then
+        assertThat(reservationsByUser).asList().isEmpty();
     }
 
     @Test
-    @Disabled
-    void findReservationsByBowlingLane() {
+    void itShouldNotFindReservationsByOverlapBorderline() {
+        // given
+        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 9, 0);
+        Reservation reservation1 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation1);
+
+        start = LocalDateTime.of(3000, 1, 1, 10, 0);
+        end = LocalDateTime.of(3000, 1, 1, 11, 0);
+        Reservation reservation2 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation2);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByOverlap(
+                LocalDateTime.of(3000, 1, 1, 9, 0),
+                LocalDateTime.of(3000, 1, 1, 10, 0),
+                bowlingLane
+        );
+
+        // then
+        assertThat(reservationsByUser).asList().isEmpty();
+    }
+
+    @Test
+    void itShouldFindReservationsByOverlapPartialStart() {
+        // given
+        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 9, 0);
+        Reservation reservation1 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation1);
+
+        start = LocalDateTime.of(3000, 1, 1, 13, 0);
+        end = LocalDateTime.of(3000, 1, 1, 14, 0);
+        Reservation reservation2 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation2);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByOverlap(
+                LocalDateTime.of(3000, 1, 1, 8, 25),
+                LocalDateTime.of(3000, 1, 1, 12, 1),
+                bowlingLane
+        );
+
+        // then
+        assertThat(reservationsByUser).asList().containsExactlyInAnyOrder(reservation1);
+    }
+
+    @Test
+    void itShouldFindReservationsByOverlapPartialEnd() {
+        // given
+        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 8, 7);
+        Reservation reservation1 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation1);
+
+        start = LocalDateTime.of(3000, 1, 1, 12, 0);
+        end = LocalDateTime.of(3000, 1, 1, 14, 0);
+        Reservation reservation2 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation2);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByOverlap(
+                LocalDateTime.of(3000, 1, 1, 8, 25),
+                LocalDateTime.of(3000, 1, 1, 12, 1),
+                bowlingLane
+        );
+
+        // then
+        assertThat(reservationsByUser).asList().containsExactlyInAnyOrder(reservation2);
+    }
+
+    @Test
+    void itShouldFindReservationsByOverlapsPartial() {
+        // given
+        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 9, 0);
+        Reservation reservation1 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation1);
+
+        start = LocalDateTime.of(3000, 1, 1, 12, 0);
+        end = LocalDateTime.of(3000, 1, 1, 14, 0);
+        Reservation reservation2 = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation2);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByOverlap(
+                LocalDateTime.of(3000, 1, 1, 8, 25),
+                LocalDateTime.of(3000, 1, 1, 12, 1),
+                bowlingLane
+        );
+
+        // then
+        assertThat(reservationsByUser).asList().containsExactlyInAnyOrder(reservation1, reservation2);
+    }
+
+    @Test
+    void itShouldFindReservationByOverlapSuperset() {
+        // given
+        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 11, 0);
+        Reservation reservation = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByOverlap(
+                LocalDateTime.of(3000, 1, 1, 9, 0),
+                LocalDateTime.of(3000, 1, 1, 10, 0),
+                bowlingLane
+        );
+
+        // then
+        assertThat(reservationsByUser).asList().containsExactly(reservation);
+    }
+
+    @Test
+    void itShouldFindReservationByOverlapSubset() {
+        // given
+        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 15, 0);
+        end = LocalDateTime.of(3000, 1, 1, 16, 0);
+        Reservation reservation = new Reservation(start, end, 1, user, bowlingLane);
+        underTest.save(reservation);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByOverlap(
+                LocalDateTime.of(3000, 1, 1, 9, 0),
+                LocalDateTime.of(3000, 1, 1, 19, 0),
+                bowlingLane
+        );
+
+        // then
+        assertThat(reservationsByUser).asList().containsExactly(reservation);
+    }
+
+    @Test
+    void itShouldFindReservationsByBowlingLane() {
+        // given
+        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane1 = new BowlingLane(1);
+        bowlingLane1 = bowlingLaneRepository.save(bowlingLane1);
+        BowlingLane bowlingLane2 = new BowlingLane(2);
+        bowlingLane2 = bowlingLaneRepository.save(bowlingLane2);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 9, 0);
+        Reservation reservation1 = new Reservation(start, end, 1, user, bowlingLane1);
+        underTest.save(reservation1);
+
+        start = LocalDateTime.of(3000, 2, 1, 8, 0);
+        end = LocalDateTime.of(3000, 2, 1, 9, 0);
+        Reservation reservation2 = new Reservation(start, end, 1, user, bowlingLane2);
+        underTest.save(reservation2);
+
+        // when
+        List<Reservation> reservationsByUser = underTest.findReservationsByBowlingLane(bowlingLane1);
+
+        // then
+        assertThat(reservationsByUser).asList().containsExactly(reservation1);
     }
 }
