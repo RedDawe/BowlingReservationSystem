@@ -4,11 +4,13 @@ import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public class ReservationInternalService {
 
     private final ReservationRepository reservationRepository;
@@ -32,7 +34,6 @@ public class ReservationInternalService {
     }
 
     @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
-    @Transactional
     public void changeBowlingLane(long reservationId, BowlingLane bowlingLane) {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new IllegalStateException(String.format("Reservation %s does not exist", reservationId))

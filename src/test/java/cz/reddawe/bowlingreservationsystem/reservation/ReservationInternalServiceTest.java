@@ -90,7 +90,7 @@ class ReservationInternalServiceTest {
     }
 
     @Test
-    void itShouldChangeBowlingLaneUsingTransactional() {
+    void itShouldChangeBowlingLane() {
         // given
         BowlingLane bowlingLane = new BowlingLane(2);
         Reservation reservation = Mockito.mock(Reservation.class);

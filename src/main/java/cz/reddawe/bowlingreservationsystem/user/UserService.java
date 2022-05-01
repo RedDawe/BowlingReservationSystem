@@ -15,10 +15,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public class UserService implements UserDetailsService {
 
     private static final String usernameRegex = "^[a-zA-Z\\d@.]{3,255}$";
