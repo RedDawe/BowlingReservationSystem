@@ -385,4 +385,34 @@ class ReservationRepositoryTest {
         // then
         assertThat(reservationsByUser).asList().containsExactly(reservation1);
     }
+
+    @Test
+    void itShouldFindIdByExpired() {
+        // given
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
+        user = userRepository.save(user);
+
+        BowlingLane bowlingLane = new BowlingLane(1);
+        bowlingLane = bowlingLaneRepository.save(bowlingLane);
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        start = LocalDateTime.of(3000, 1, 1, 8, 0);
+        end = LocalDateTime.of(3000, 1, 1, 9, 0);
+        Reservation reservation1 = new Reservation(start, end, 1, user, bowlingLane);
+        reservation1 = underTest.save(reservation1);
+
+        start = LocalDateTime.of(3000, 2, 1, 8, 0);
+        end = LocalDateTime.of(3000, 2, 1, 9, 0);
+        Reservation reservation2 = new Reservation(start, end, 1, user, bowlingLane);
+        reservation2 = underTest.save(reservation2);
+
+        // when
+        List<Long> result = underTest.findIdByExpired(LocalDateTime.of(
+                3000, 2,  1, 8, 30));
+
+        // then
+        assertThat(result).asList().containsExactly(reservation1.getId());
+    }
 }
