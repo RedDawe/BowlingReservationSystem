@@ -11,6 +11,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+  session:
+    store-type: jdbc
 
 server:
   error:
