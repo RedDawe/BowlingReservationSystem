@@ -59,7 +59,7 @@ public class AuthorizationConfiguration {
     }
 
     public void configureManager() {
-        Role managerRole = roleRepository.findByName("MANAGER");
+        Role managerRole = roleRepository.getByName("MANAGER");
         String rawPassword = "poet-homecoming-group-try";
 
         userRepository.save(

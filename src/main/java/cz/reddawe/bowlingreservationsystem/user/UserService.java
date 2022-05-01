@@ -98,7 +98,7 @@ public class UserService implements UserDetailsService {
         }
 
         String passwordHash = passwordEncoder.encode(userInput.password());
-        Role userRole = roleRepository.findByName("USER");
+        Role userRole = roleRepository.getByName("USER");
         User user = new User(userInput.username(), passwordHash, userRole);
 
         userRepository.save(user);

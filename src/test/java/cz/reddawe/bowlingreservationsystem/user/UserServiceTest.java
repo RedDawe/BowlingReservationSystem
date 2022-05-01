@@ -24,7 +24,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -150,7 +149,7 @@ class UserServiceTest {
         UserInput userInput = new UserInput("username", "password1");
         Role role = new Role("USER", null);
 
-        given(roleRepository.findByName("USER")).willReturn(role);
+        given(roleRepository.getByName("USER")).willReturn(role);
 
         // when
         underTest.registerUser(userInput);

@@ -5,7 +5,6 @@ import cz.reddawe.bowlingreservationsystem.authorization.AuthorityRepository;
 import cz.reddawe.bowlingreservationsystem.authorization.Role;
 import cz.reddawe.bowlingreservationsystem.authorization.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -46,7 +44,7 @@ class UserRepositoryTest {
     @Test
     void itShouldFindUserByUsername() {
         // given
-        User user = new User("username", "password1", roleRepository.findByName("USER"));
+        User user = new User("username", "password1", roleRepository.getByName("USER"));
         user = underTest.save(user);
 
         // when
@@ -59,7 +57,7 @@ class UserRepositoryTest {
     @Test
     void itShouldNotFindUserByUsername() {
         // given
-        User user = new User("username", "password1", roleRepository.findByName("USER"));
+        User user = new User("username", "password1", roleRepository.getByName("USER"));
         underTest.save(user);
 
         // when

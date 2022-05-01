@@ -52,7 +52,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldFindReservationByUser() {
         // given
-        User user = new User("username", "password1", roleRepository.findByName("USER"));
+        User user = new User("username", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -73,9 +73,9 @@ class ReservationRepositoryTest {
     @Test
     void itShouldNotFindReservationByUser() {
         // given
-        User user1 = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user1 = new User("username1", "password1", roleRepository.getByName("USER"));
         user1 = userRepository.save(user1);
-        User user2 = new User("username2", "password1", roleRepository.findByName("USER"));
+        User user2 = new User("username2", "password1", roleRepository.getByName("USER"));
         user2 = userRepository.save(user2);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -96,9 +96,9 @@ class ReservationRepositoryTest {
     @Test
     void itShouldFindReservationsByUser() {
         // given
-        User user1 = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user1 = new User("username1", "password1", roleRepository.getByName("USER"));
         user1 = userRepository.save(user1);
-        User user2 = new User("username2", "password1", roleRepository.findByName("USER"));
+        User user2 = new User("username2", "password1", roleRepository.getByName("USER"));
         user2 = userRepository.save(user2);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -137,7 +137,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldNotFindReservationsByOverlap() {
         // given
-        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -170,7 +170,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldNotFindReservationsByOverlapBorderline() {
         // given
-        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -203,7 +203,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldFindReservationsByOverlapPartialStart() {
         // given
-        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -236,7 +236,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldFindReservationsByOverlapPartialEnd() {
         // given
-        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -269,7 +269,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldFindReservationsByOverlapsPartial() {
         // given
-        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -302,7 +302,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldFindReservationByOverlapSuperset() {
         // given
-        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -330,7 +330,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldFindReservationByOverlapSubset() {
         // given
-        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane = new BowlingLane(1);
@@ -358,7 +358,7 @@ class ReservationRepositoryTest {
     @Test
     void itShouldFindReservationsByBowlingLane() {
         // given
-        User user = new User("username1", "password1", roleRepository.findByName("USER"));
+        User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
 
         BowlingLane bowlingLane1 = new BowlingLane(1);
