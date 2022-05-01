@@ -1,9 +1,10 @@
 package cz.reddawe.bowlingreservationsystem.reservation;
 
-import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLane;
+import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLaneService;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ReservationDeletionTimeExpiredException;
-import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ReservationValidationException;
+import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ReservationInvalidException;
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceDoesNotExistException;
+import cz.reddawe.bowlingreservationsystem.exceptions.forbidden.ForbiddenException;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationInput;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithIsMineFlag;
 import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithoutUser;
@@ -12,21 +13,27 @@ import cz.reddawe.bowlingreservationsystem.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final UserService userService;
+    private final BowlingLaneService bowlingLaneService;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, UserService userService, BowlingLaneService bowlingLaneService) {
         this.reservationRepository = reservationRepository;
+        this.userService = userService;
+        this.bowlingLaneService = bowlingLaneService;
     }
 
     private static ReservationWithIsMineFlag reservationToReservationWithIsMineFlag(
@@ -56,7 +63,7 @@ public class ReservationService {
     public List<ReservationWithIsMineFlag> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
-        Optional<User> currentUser = UserService.getCurrentUser();
+        Optional<User> currentUser = userService.getCurrentUser();
         return reservations.stream()
                 .map(reservation -> reservationToReservationWithIsMineFlag(reservation, currentUser))
                 .toList();
@@ -64,11 +71,10 @@ public class ReservationService {
 
     @PreAuthorize("isAuthenticated()")
     public List<ReservationWithoutUser> getMyReservations() {
-        List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(
-                UserService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
-                            getMyReservations can only be called by an authenticated user
-                        """))
-        );
+        User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                    getMyReservations can only be called by an authenticated user"""));
+
+        List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(currentUser);
 
         return reservationsByUser.stream()
                 .map(ReservationService::reservationToReservationWithoutUser)
@@ -84,23 +90,27 @@ public class ReservationService {
     }
 
     private void throwIfNotValidReservation(ReservationInput reservationInput) {
+        if (!bowlingLaneService.doesBowlingLaneExist(reservationInput.bowlingLane().getNumber())) {
+            throw new ReservationInvalidException("bowlingLane");
+        }
+
         if (reservationInput.peopleComing() < 1) {
-            throw new ReservationValidationException("peopleComing");
+            throw new ReservationInvalidException("peopleComing");
         }
 
         if (reservationInput.start().compareTo(reservationInput.end()) >= 0) {
-            throw new ReservationValidationException("start>=end");
+            throw new ReservationInvalidException("start>=end");
         }
 
         if (overlaps(reservationInput)) {
-            throw new ReservationValidationException("overlap");
+            throw new ReservationInvalidException("overlap");
         }
     }
 
     @PreAuthorize("hasAuthority('RESERVATION:CREATE')")
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
         throwIfNotValidReservation(reservationInput);
-        User currentUser = UserService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+        User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                 createReservation can only be called by an authenticated user"""));
         Reservation reservation = reservationInputToReservation(reservationInput, currentUser);
 
@@ -109,40 +119,30 @@ public class ReservationService {
         return reservationToReservationWithoutUser(savedReservation);
     }
 
-    @PreAuthorize("hasAuthority('RESERVATION:DELETE')")
-    public void deleteReservation(long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
-                () -> new ResourceDoesNotExistException(String.valueOf(reservationId))
-        );
+    private void throwIfNotAuthorizedToDelete(Reservation reservation) {
+        User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
+                deleteReservation can only be called by an authenticated user"""));
+
+        if (!currentUser.equals(reservation.getUser())) {
+            throw new ForbiddenException("You attempted to delete someone else's reservation");
+        }
+
+
         Duration timeUntilReservation = Duration.between(LocalDateTime.now(), reservation.getStart());
 
         if (timeUntilReservation.compareTo(Duration.ofHours(24)) < 0) {
             throw new ReservationDeletionTimeExpiredException(reservation.getStart().toString());
         }
-
-        reservationRepository.deleteById(reservationId);
     }
 
-    public List<Reservation> getReservationsByLane(BowlingLane bowlingLane) {
-        return reservationRepository.findReservationsByBowlingLane(bowlingLane);
-    }
-
-    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
-    public void forcefullyDeleteReservation(long reservationId) {
-        if (!reservationRepository.existsById(reservationId)) {
-            throw new IllegalStateException(String.format("Reservation %s does not exist", reservationId));
-        }
-
-        reservationRepository.deleteById(reservationId);
-    }
-
-    @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
-    @Transactional
-    public void changeBowlingLane(long reservationId, BowlingLane bowlingLane) {
+    @PreAuthorize("hasAuthority('RESERVATION:DELETE')")
+    public void deleteReservation(long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
-                () -> new IllegalStateException(String.format("Reservation %s does not exist", reservationId))
+                () -> new ResourceDoesNotExistException(String.valueOf(reservationId))
         );
 
-        reservation.setBowlingLane(bowlingLane);
+        throwIfNotAuthorizedToDelete(reservation);
+
+        reservationRepository.deleteById(reservationId);
     }
 }

@@ -33,7 +33,7 @@ public class Role {
     )
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "roles_have_authorities"
     )

@@ -21,4 +21,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("FROM Reservation r WHERE r.bowlingLane = ?1")
     List<Reservation> findReservationsByBowlingLane(BowlingLane bowlingLane);
+
+    @Query("SELECT r.id FROM Reservation r WHERE r.end <= ?1")
+    List<Long> findIdByExpired(LocalDateTime now);
 }
