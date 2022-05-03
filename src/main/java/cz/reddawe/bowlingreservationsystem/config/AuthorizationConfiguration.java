@@ -71,6 +71,8 @@ public class AuthorizationConfiguration {
 
     @Bean
     public void doConfiguration() {
+        if (userRepository.findByUsername("manager").isPresent()) return;
+
         List<Authority> userAuthorities = new ArrayList<>();
         List<Authority> managerAuthorities = new ArrayList<>();
 
