@@ -11,6 +11,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a user account to which Reservations are tied.
+ *
+ * @author David Dvorak
+ */
 @Entity(name = "User")
 @Table(name = "users")
 public class User implements UserDetails {
@@ -140,3 +145,4 @@ public class User implements UserDetails {
                 '}';
     }
 }
+

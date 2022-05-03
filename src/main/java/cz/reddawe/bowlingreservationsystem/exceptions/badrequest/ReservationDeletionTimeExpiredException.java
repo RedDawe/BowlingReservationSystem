@@ -1,5 +1,10 @@
 package cz.reddawe.bowlingreservationsystem.exceptions.badrequest;
 
+/**
+ * Thrown when user attempted to delete a reservation less than 24 hours before it starts.
+ *
+ * @author David Dvorak
+ */
 public class ReservationDeletionTimeExpiredException extends BadRequestException {
 
     public ReservationDeletionTimeExpiredException(String startTime) {

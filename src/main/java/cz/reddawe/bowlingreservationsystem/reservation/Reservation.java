@@ -8,6 +8,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * Represents a reservation.
+ *
+ * @author David Dvorak
+ */
 @Entity(name = "Reservation")
 @Table(name = "reservations")
 public class Reservation {

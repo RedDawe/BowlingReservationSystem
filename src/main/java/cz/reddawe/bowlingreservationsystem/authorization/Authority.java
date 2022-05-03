@@ -3,6 +3,11 @@ package cz.reddawe.bowlingreservationsystem.authorization;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * Represents an authority.
+ *
+ * @author David Dvorak
+ */
 @Entity(name = "Authority")
 @Table(name = "authorities")
 public class Authority {

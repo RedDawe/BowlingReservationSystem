@@ -7,6 +7,11 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Implements {@link WebMvcConfigurer}
+ *
+ * @author David Dvorak
+ */
 @Configuration
 @EnableScheduling
 public class WebConfiguration implements WebMvcConfigurer {

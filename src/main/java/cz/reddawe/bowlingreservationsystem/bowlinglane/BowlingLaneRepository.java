@@ -7,6 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Repository for BowlingLane entity.
+ *
+ * @author David Dvorak
+ */
 @Repository
 public interface BowlingLaneRepository extends JpaRepository<BowlingLane, Integer> {
 

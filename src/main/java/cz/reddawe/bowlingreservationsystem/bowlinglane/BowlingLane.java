@@ -5,6 +5,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+/**
+ * Represents a bowling lane.
+ *
+ * @author David Dvorak
+ */
 @Entity(name = "BowlingLane")
 @Table(name = "bowling_lanes")
 public class BowlingLane {

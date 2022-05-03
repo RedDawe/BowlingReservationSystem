@@ -19,8 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Part of the service layer of the Reservation entity,
+ * to be directly used by the controller layer
+ *
+ * @author David Dvorak
+ */
 @Service
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public class ReservationService {
@@ -36,39 +41,28 @@ public class ReservationService {
         this.bowlingLaneService = bowlingLaneService;
     }
 
-    private static ReservationWithIsMineFlag reservationToReservationWithIsMineFlag(
-            Reservation reservation, Optional<User> currentUser) {
-
-
-        return new ReservationWithIsMineFlag(
-                reservation.getId(), reservation.getStart(), reservation.getEnd(),
-                reservation.getPeopleComing(), reservation.getUser().equals(currentUser.orElse(null)),
-                reservation.getBowlingLane());
-    }
-
-    private static ReservationWithoutUser reservationToReservationWithoutUser(Reservation reservation) {
-
-        return new ReservationWithoutUser(
-                reservation.getId(), reservation.getStart(), reservation.getEnd(),
-                reservation.getPeopleComing(), reservation.getBowlingLane());
-    }
-
-    private static Reservation reservationInputToReservation(ReservationInput reservationInput, User currentUser) {
-        return new Reservation(
-                reservationInput.start(), reservationInput.end(),
-                reservationInput.peopleComing(), currentUser, reservationInput.bowlingLane()
-        );
-    }
-
+    /**
+     * Returns all reservations of all users.
+     * Reservations of the currently logged-in user
+     * have {@link ReservationWithIsMineFlag#isMine()}
+     * set to true.
+     *
+     * @return all reservations
+     */
     public List<ReservationWithIsMineFlag> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
-        Optional<User> currentUser = userService.getCurrentUser();
+        User currentUser = userService.getCurrentUser().orElse(null);
         return reservations.stream()
-                .map(reservation -> reservationToReservationWithIsMineFlag(reservation, currentUser))
+                .map(reservation -> ReservationUtils.reservationToReservationWithIsMineFlag(reservation, currentUser))
                 .toList();
     }
 
+    /**
+     * Returns reservations of the currently logged-in user.
+     *
+     * @return reservations of the currently logged-in user
+     */
     @PreAuthorize("isAuthenticated()")
     public List<ReservationWithoutUser> getMyReservations() {
         User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
@@ -77,7 +71,7 @@ public class ReservationService {
         List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(currentUser);
 
         return reservationsByUser.stream()
-                .map(ReservationService::reservationToReservationWithoutUser)
+                .map(ReservationUtils::reservationToReservationWithoutUser)
                 .toList();
     }
 
@@ -107,19 +101,25 @@ public class ReservationService {
         }
     }
 
+    /**
+     * Creates reservation.
+     *
+     * @param reservationInput to be created
+     * @return the created reservation
+     */
     @PreAuthorize("hasAuthority('RESERVATION:CREATE')")
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
         throwIfNotValidReservation(reservationInput);
         User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                 createReservation can only be called by an authenticated user"""));
-        Reservation reservation = reservationInputToReservation(reservationInput, currentUser);
+        Reservation reservation = ReservationUtils.reservationInputToReservation(reservationInput, currentUser);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        return reservationToReservationWithoutUser(savedReservation);
+        return ReservationUtils.reservationToReservationWithoutUser(savedReservation);
     }
 
-    private void throwIfNotAuthorizedToDelete(Reservation reservation) {
+    private void throwIfInvalidDeleteRequest(Reservation reservation) {
         User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                 deleteReservation can only be called by an authenticated user"""));
 
@@ -135,13 +135,18 @@ public class ReservationService {
         }
     }
 
+    /**
+     * Deletes reservation.
+     *
+     * @param reservationId to be deleted
+     */
     @PreAuthorize("hasAuthority('RESERVATION:DELETE')")
     public void deleteReservation(long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new ResourceDoesNotExistException(String.valueOf(reservationId))
         );
 
-        throwIfNotAuthorizedToDelete(reservation);
+        throwIfInvalidDeleteRequest(reservation);
 
         reservationRepository.deleteById(reservationId);
     }

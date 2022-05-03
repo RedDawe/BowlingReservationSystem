@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.ZonedDateTime;
 
+/**
+ * Exception handler.
+ *
+ * @author David Dvorak
+ */
 @ControllerAdvice
 public class CustomExceptionHandler {
 

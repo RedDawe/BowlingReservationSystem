@@ -7,9 +7,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+/**
+ * Implements {@link WebSecurityConfigurerAdapter}
+ *
+ * @author David Dvorak
+ */
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 

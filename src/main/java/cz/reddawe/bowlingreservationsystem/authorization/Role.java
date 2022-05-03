@@ -3,6 +3,11 @@ package cz.reddawe.bowlingreservationsystem.authorization;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * Represents an authorization role.
+ *
+ * @author David Dvorak
+ */
 @Entity(name = "Role")
 @Table(name = "roles")
 public class Role {

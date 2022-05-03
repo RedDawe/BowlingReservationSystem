@@ -10,6 +10,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Repository for Reservation entity.
+ *
+ * @author David Dvorak
+ */
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 

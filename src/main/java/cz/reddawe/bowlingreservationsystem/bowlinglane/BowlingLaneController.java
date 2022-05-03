@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller for BowlingLane entity.
+ *
+ * @author David Dvorak
+ */
 @RestController
 @RequestMapping("api/v1/bowling-lane")
 public class BowlingLaneController {

@@ -1,5 +1,10 @@
 package cz.reddawe.bowlingreservationsystem.exceptions.badrequest;
 
+/**
+ * Thrown when the server encounters a bad request.
+ *
+ * @author David Dvorak
+ */
 public abstract class BadRequestException extends RuntimeException {
 
     private final String error;

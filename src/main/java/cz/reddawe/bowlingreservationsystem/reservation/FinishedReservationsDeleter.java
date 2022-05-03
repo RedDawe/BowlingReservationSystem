@@ -7,6 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * Deletes reservations that have already ended every midnight.
+ *
+ * @author David Dvorak
+ */
 @Service
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public class FinishedReservationsDeleter {
