@@ -1,6 +1,8 @@
 package cz.reddawe.bowlingreservationsystem.reservation;
 
+import cz.reddawe.bowlingreservationsystem.authorization.Role;
 import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLane;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithUsername;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,9 +38,8 @@ class ReservationInternalServiceTest {
     @Test
     void itShouldGetReservationsByLane() {
         // given
-        BowlingLane bowlingLane1 = new BowlingLane(1);
-        BowlingLane bowlingLane2 = new BowlingLane(2);
-        User user = new User();
+        BowlingLane bowlingLane = new BowlingLane(1);
+        User user = new User("username", "password1", new Role());
 
         LocalDateTime start;
         LocalDateTime end;
@@ -46,21 +47,18 @@ class ReservationInternalServiceTest {
         start = LocalDateTime.of(3000, 1, 1, 8, 0);
         end = LocalDateTime.of(3000, 1, 1, 9, 0);
         Reservation reservation1 = new Reservation(start, end,
-                1, user, bowlingLane1);
+                1, user, bowlingLane);
         ReflectionTestUtils.setField(reservation1, "id", 1L);
+        ReservationWithUsername reservationWithUsername = new ReservationWithUsername(1L, start, end, 1,
+                "username", bowlingLane);
 
-        start = LocalDateTime.of(3000, 2, 1, 8, 0);
-        end = LocalDateTime.of(3000, 2, 1, 9, 0);
-        Reservation reservation2 = new Reservation(start, end,
-                1, user, bowlingLane2);
-
-        given(reservationRepository.findReservationsByBowlingLane(bowlingLane2)).willReturn(List.of(reservation1));
+        given(reservationRepository.findReservationsByBowlingLane(bowlingLane)).willReturn(List.of(reservation1));
 
         // when
-        List<Reservation> result = underTest.getReservationsByLane(bowlingLane2);
+        List<ReservationWithUsername> result = underTest.getReservationsByLane(bowlingLane);
 
         // then
-        assertThat(result).asList().containsExactlyInAnyOrder(reservation1);
+        assertThat(result).asList().containsExactly(reservationWithUsername);
     }
 
     @Test

@@ -5,6 +5,7 @@ import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceDoesNot
 import cz.reddawe.bowlingreservationsystem.reservation.Reservation;
 import cz.reddawe.bowlingreservationsystem.reservation.ReservationInternalService;
 import cz.reddawe.bowlingreservationsystem.reservation.ReservationService;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithUsername;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,7 @@ class BowlingLaneServiceTest {
     }
 
     @Test
-    void itShouldDeleteBowlingLaneAndReassignProperly() {
+    void itShouldDeleteBowlingLaneAndReassignReservation() {
         // given
         BowlingLane toBeRemoved = new BowlingLane(1);
         BowlingLane alternative = new BowlingLane(2);
@@ -89,16 +90,20 @@ class BowlingLaneServiceTest {
         Reservation shouldReassignReservation = new Reservation(shouldReassignStart, shouldReassignEnd,
                 1, user, toBeRemoved);
         ReflectionTestUtils.setField(shouldReassignReservation, "id", 1L);
+        ReservationWithUsername shouldReassignReservationWithUsername = new ReservationWithUsername(
+                1L, shouldReassignStart, shouldReassignEnd, 1, "username1", toBeRemoved);
 
         LocalDateTime cannotReassignStart = LocalDateTime.of(3000, 2, 1, 8, 0);
         LocalDateTime cannotReassignEnd = LocalDateTime.of(3000, 2, 1, 9, 0);
         Reservation cannotReassignReservation = new Reservation(cannotReassignStart, cannotReassignEnd,
                 1, user, toBeRemoved);
         ReflectionTestUtils.setField(cannotReassignReservation, "id", 2L);
+        ReservationWithUsername cannotReassignReservationWithUsername = new ReservationWithUsername(
+                2L, cannotReassignStart, cannotReassignEnd, 1, "username2", toBeRemoved);
 
         given(bowlingLaneRepository.findById(1)).willReturn(Optional.of(toBeRemoved));
         given(reservationInternalService.getReservationsByLane(toBeRemoved)).willReturn(List.of(
-                shouldReassignReservation, cannotReassignReservation
+                shouldReassignReservationWithUsername, cannotReassignReservationWithUsername
         ));
 
         given(bowlingLaneRepository.findAlternativeBowlingLaneFor(shouldReassignStart, shouldReassignEnd, toBeRemoved))
@@ -121,7 +126,7 @@ class BowlingLaneServiceTest {
         verify(reservationInternalService).forcefullyDeleteReservation(cannotReassignIdArgumentCaptor.capture());
         assertThat(cannotReassignIdArgumentCaptor.getValue()).isEqualTo(2);
 
-        assertThat(result).asList().containsExactlyInAnyOrder(cannotReassignReservation.toString());
+        assertThat(result).asList().containsExactlyInAnyOrder(cannotReassignReservationWithUsername.toString());
     }
 
     @Test
