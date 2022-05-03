@@ -1,6 +1,7 @@
 package cz.reddawe.bowlingreservationsystem.reservation;
 
 import cz.reddawe.bowlingreservationsystem.bowlinglane.BowlingLane;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithUsername;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,15 @@ public class ReservationInternalService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<Reservation> getReservationsByLane(BowlingLane bowlingLane) {
-        return reservationRepository.findReservationsByBowlingLane(bowlingLane);
+    private ReservationWithUsername reservationToReservationWithUsername(Reservation reservation) {
+        return new ReservationWithUsername(reservation.getId(), reservation.getStart(), reservation.getEnd(),
+                reservation.getPeopleComing(), reservation.getUser().getUsername(), reservation.getBowlingLane());
+    }
+
+    public List<ReservationWithUsername> getReservationsByLane(BowlingLane bowlingLane) {
+        return reservationRepository.findReservationsByBowlingLane(bowlingLane).stream()
+                .map(this::reservationToReservationWithUsername)
+                .toList();
     }
 
     @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")

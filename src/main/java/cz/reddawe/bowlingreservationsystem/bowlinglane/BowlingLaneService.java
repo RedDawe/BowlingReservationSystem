@@ -4,6 +4,7 @@ import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceAlready
 import cz.reddawe.bowlingreservationsystem.exceptions.badrequest.ResourceDoesNotExistException;
 import cz.reddawe.bowlingreservationsystem.reservation.Reservation;
 import cz.reddawe.bowlingreservationsystem.reservation.ReservationInternalService;
+import cz.reddawe.bowlingreservationsystem.reservation.iorecords.ReservationWithUsername;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -39,21 +40,20 @@ public class BowlingLaneService {
 
     private List<String> moveReservationsFromBowlingLane(BowlingLane toBeRemoved) {
         List<String> couldNotReassign = new LinkedList<>();
-        List<Reservation> reservationsOnToBeRemovedBowlingLane = reservationInternalService.getReservationsByLane(
-                toBeRemoved);
+        List<ReservationWithUsername> reservationsOnToBeRemovedBowlingLane = reservationInternalService
+                .getReservationsByLane(toBeRemoved);
 
-        for (Reservation reservation : reservationsOnToBeRemovedBowlingLane) {
+        for (ReservationWithUsername reservation : reservationsOnToBeRemovedBowlingLane) {
 
             List<BowlingLane> emptyLanesDuringReservation = bowlingLaneRepository.findAlternativeBowlingLaneFor(
-                    reservation.getStart(), reservation.getEnd(), toBeRemoved
-            );
+                    reservation.start(), reservation.end(), toBeRemoved);
 
             if (emptyLanesDuringReservation.size() == 0) {
                 couldNotReassign.add(reservation.toString());
-                reservationInternalService.forcefullyDeleteReservation(reservation.getId());
+                reservationInternalService.forcefullyDeleteReservation(reservation.id());
                 continue;
             }
-            reservationInternalService.changeBowlingLane(reservation.getId(), emptyLanesDuringReservation.get(0));
+            reservationInternalService.changeBowlingLane(reservation.id(), emptyLanesDuringReservation.get(0));
         }
 
         return couldNotReassign;
