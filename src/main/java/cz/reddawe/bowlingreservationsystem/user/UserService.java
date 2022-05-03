@@ -20,6 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+/**
+ * Implements service layer for User entity.
+ *
+ * @author David Dvorak
+ */
 @Service
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public class UserService implements UserDetailsService {

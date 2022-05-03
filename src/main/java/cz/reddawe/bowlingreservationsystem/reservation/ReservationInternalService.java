@@ -10,6 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Part of the service layer of the Reservation entity,
+ * to be used by other objects of the service layer.
+ *
+ * @author David Dvorak
+ */
 @Service
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public class ReservationInternalService {

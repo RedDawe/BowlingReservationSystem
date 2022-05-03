@@ -13,6 +13,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Adds authorities, roles and manager account to database.
+ *
+ * Authorities:
+ *  RESERVATION:CREATE
+ *  RESERVATION:DELETE
+ *  BOWLING_LANE:CREATE
+ *  BOWLING_LANE:DELETE
+ *
+ * Roles:
+ *  USER with authorities: RESERVATION:CREATE, RESERVATION:DELETE
+ *  MANAGER with authorities: BOWLING_LANE:CREATE, BOWLING_LANE:DELETE
+ *
+ * Users:
+ *  manager with role: MANAGER
+ *
+ * @author David Dvorak
+ */
 @Configuration
 public class AuthorizationConfiguration {
 
@@ -30,7 +48,7 @@ public class AuthorizationConfiguration {
         this.propertiesConfig = propertiesConfig;
     }
 
-    public void configureAuthorities(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
+    private void configureAuthorities(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
         Authority reservationCreate = new Authority("RESERVATION:CREATE");
         Authority reservationDelete = new Authority("RESERVATION:DELETE");
 
@@ -50,7 +68,7 @@ public class AuthorizationConfiguration {
         ));
     }
 
-    public void configureRoles(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
+    private void configureRoles(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
         Role user = new Role("USER", userAuthorities);
         Role manager = new Role("MANAGER", managerAuthorities);
 
@@ -60,7 +78,7 @@ public class AuthorizationConfiguration {
         ));
     }
 
-    public void configureManager() {
+    private void configureManager() {
         Role managerRole = roleRepository.getByName("MANAGER");
         String rawPassword = propertiesConfig.getManagerPassword();
 

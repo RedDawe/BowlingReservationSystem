@@ -14,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Implements service layer for BowlingLane entity.
+ *
+ * @author David Dvorak
+ */
 @Service
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public class BowlingLaneService {
