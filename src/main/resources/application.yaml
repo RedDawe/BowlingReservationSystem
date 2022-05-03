@@ -17,3 +17,6 @@ spring:
 server:
   error:
     include-message: always
+
+application:
+  managerPassword: poet-homecoming-group-try

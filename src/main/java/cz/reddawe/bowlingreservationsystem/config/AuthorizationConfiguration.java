@@ -20,12 +20,14 @@ public class AuthorizationConfiguration {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PropertiesConfig propertiesConfig;
 
-    public AuthorizationConfiguration(AuthorityRepository authorityRepository, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthorizationConfiguration(AuthorityRepository authorityRepository, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, PropertiesConfig propertiesConfig) {
         this.authorityRepository = authorityRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.propertiesConfig = propertiesConfig;
     }
 
     public void configureAuthorities(List<Authority> userAuthorities, List<Authority> managerAuthorities) {
@@ -60,7 +62,7 @@ public class AuthorizationConfiguration {
 
     public void configureManager() {
         Role managerRole = roleRepository.getByName("MANAGER");
-        String rawPassword = "poet-homecoming-group-try";
+        String rawPassword = propertiesConfig.getManagerPassword();
 
         userRepository.save(
                 new User("manager", passwordEncoder.encode(rawPassword),  managerRole)
