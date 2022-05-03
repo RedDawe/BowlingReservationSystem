@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Part of the service layer of the Reservation entity,
@@ -42,6 +41,14 @@ public class ReservationService {
         this.bowlingLaneService = bowlingLaneService;
     }
 
+    /**
+     * Returns all reservations of all users.
+     * Reservations of the currently logged-in user
+     * have {@link ReservationWithIsMineFlag#isMine()}
+     * set to true.
+     *
+     * @return all reservations
+     */
     public List<ReservationWithIsMineFlag> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
@@ -51,6 +58,11 @@ public class ReservationService {
                 .toList();
     }
 
+    /**
+     * Returns reservations of the currently logged-in user.
+     *
+     * @return reservations of the currently logged-in user
+     */
     @PreAuthorize("isAuthenticated()")
     public List<ReservationWithoutUser> getMyReservations() {
         User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
@@ -89,6 +101,12 @@ public class ReservationService {
         }
     }
 
+    /**
+     * Creates reservation.
+     *
+     * @param reservationInput to be created
+     * @return the created reservation
+     */
     @PreAuthorize("hasAuthority('RESERVATION:CREATE')")
     public ReservationWithoutUser createReservation(ReservationInput reservationInput) {
         throwIfNotValidReservation(reservationInput);
@@ -101,7 +119,7 @@ public class ReservationService {
         return ReservationUtils.reservationToReservationWithoutUser(savedReservation);
     }
 
-    private void throwIfNotAuthorizedToDelete(Reservation reservation) {
+    private void throwIfInvalidDeleteRequest(Reservation reservation) {
         User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                 deleteReservation can only be called by an authenticated user"""));
 
@@ -117,13 +135,18 @@ public class ReservationService {
         }
     }
 
+    /**
+     * Deletes reservation.
+     *
+     * @param reservationId to be deleted
+     */
     @PreAuthorize("hasAuthority('RESERVATION:DELETE')")
     public void deleteReservation(long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new ResourceDoesNotExistException(String.valueOf(reservationId))
         );
 
-        throwIfNotAuthorizedToDelete(reservation);
+        throwIfInvalidDeleteRequest(reservation);
 
         reservationRepository.deleteById(reservationId);
     }

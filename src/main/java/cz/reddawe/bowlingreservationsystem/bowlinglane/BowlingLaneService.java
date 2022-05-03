@@ -33,6 +33,12 @@ public class BowlingLaneService {
         this.bowlingLaneRepository = bowlingLaneRepository;
     }
 
+    /**
+     * Creates bowlingLane.
+     *
+     * @param bowlingLane to be created
+     * @return created bowlingLane
+     */
     @PreAuthorize("hasAuthority('BOWLING_LANE:CREATE')")
     public BowlingLane createBowlingLane(BowlingLane bowlingLane) {
         int bowlingLaneNumber = bowlingLane.getNumber();
@@ -64,6 +70,20 @@ public class BowlingLaneService {
         return couldNotReassign;
     }
 
+    /**
+     * Deletes bowlingLane.
+     *
+     * Before deleting the bowlingLane attempts to
+     * find alternative bowlingLanes for reservations
+     * that are currently on the lane that is being deleted.
+     *
+     * If alternative bowlingLane can't be found for
+     * a reservation, the reservation is deleted and
+     * its string representation returned instead.
+     *
+     * @param bowlingLaneNumber to be deleted
+     * @return string representation of reservation that had to be deleted
+     */
     @PreAuthorize("hasAuthority('BOWLING_LANE:DELETE')")
     public List<String> deleteBowlingLane(int bowlingLaneNumber) {
         BowlingLane toBeRemoved = bowlingLaneRepository.findById(bowlingLaneNumber).orElseThrow(
@@ -76,10 +96,21 @@ public class BowlingLaneService {
         return couldNotReassign;
     }
 
+    /**
+     * Returns bowlingLane ordered ascending by {@link BowlingLane#getNumber()}.
+     *
+     * @return ordered bowlingLanes
+     */
     public List<BowlingLane> getBowlingLanesOrdered() {
         return bowlingLaneRepository.findAllByOrderByNumber();
     }
 
+    /**
+     * Returns whether bowlingLane with bowlingLaneNumber exists.
+     *
+     * @param bowlingLaneNumber to be checked
+     * @return true if bowlingLane exists in the database
+     */
     public boolean doesBowlingLaneExist(int bowlingLaneNumber) {
         return bowlingLaneRepository.existsById(bowlingLaneNumber);
     }

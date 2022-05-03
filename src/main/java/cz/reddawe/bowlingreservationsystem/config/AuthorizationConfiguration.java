@@ -6,6 +6,7 @@ import cz.reddawe.bowlingreservationsystem.authorization.Role;
 import cz.reddawe.bowlingreservationsystem.authorization.RoleRepository;
 import cz.reddawe.bowlingreservationsystem.user.User;
 import cz.reddawe.bowlingreservationsystem.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +41,7 @@ public class AuthorizationConfiguration {
     private final PasswordEncoder passwordEncoder;
     private final PropertiesConfig propertiesConfig;
 
+    @Autowired
     public AuthorizationConfiguration(AuthorityRepository authorityRepository, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, PropertiesConfig propertiesConfig) {
         this.authorityRepository = authorityRepository;
         this.roleRepository = roleRepository;
@@ -87,6 +89,9 @@ public class AuthorizationConfiguration {
         );
     }
 
+    /**
+     * Configure database according to {@link AuthorizationConfiguration} if not yet configured.
+     */
     @Bean
     public void doConfiguration() {
         if (userRepository.findByUsername("manager").isPresent()) return;
