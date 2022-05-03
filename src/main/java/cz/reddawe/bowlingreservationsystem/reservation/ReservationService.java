@@ -42,36 +42,12 @@ public class ReservationService {
         this.bowlingLaneService = bowlingLaneService;
     }
 
-    private static ReservationWithIsMineFlag reservationToReservationWithIsMineFlag(
-            Reservation reservation, Optional<User> currentUser) {
-
-
-        return new ReservationWithIsMineFlag(
-                reservation.getId(), reservation.getStart(), reservation.getEnd(),
-                reservation.getPeopleComing(), reservation.getUser().equals(currentUser.orElse(null)),
-                reservation.getBowlingLane());
-    }
-
-    private static ReservationWithoutUser reservationToReservationWithoutUser(Reservation reservation) {
-
-        return new ReservationWithoutUser(
-                reservation.getId(), reservation.getStart(), reservation.getEnd(),
-                reservation.getPeopleComing(), reservation.getBowlingLane());
-    }
-
-    private static Reservation reservationInputToReservation(ReservationInput reservationInput, User currentUser) {
-        return new Reservation(
-                reservationInput.start(), reservationInput.end(),
-                reservationInput.peopleComing(), currentUser, reservationInput.bowlingLane()
-        );
-    }
-
     public List<ReservationWithIsMineFlag> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
-        Optional<User> currentUser = userService.getCurrentUser();
+        User currentUser = userService.getCurrentUser().orElse(null);
         return reservations.stream()
-                .map(reservation -> reservationToReservationWithIsMineFlag(reservation, currentUser))
+                .map(reservation -> ReservationUtils.reservationToReservationWithIsMineFlag(reservation, currentUser))
                 .toList();
     }
 
@@ -83,7 +59,7 @@ public class ReservationService {
         List<Reservation> reservationsByUser = reservationRepository.findReservationsByUser(currentUser);
 
         return reservationsByUser.stream()
-                .map(ReservationService::reservationToReservationWithoutUser)
+                .map(ReservationUtils::reservationToReservationWithoutUser)
                 .toList();
     }
 
@@ -118,11 +94,11 @@ public class ReservationService {
         throwIfNotValidReservation(reservationInput);
         User currentUser = userService.getCurrentUser().orElseThrow(() -> new IllegalStateException("""
                 createReservation can only be called by an authenticated user"""));
-        Reservation reservation = reservationInputToReservation(reservationInput, currentUser);
+        Reservation reservation = ReservationUtils.reservationInputToReservation(reservationInput, currentUser);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        return reservationToReservationWithoutUser(savedReservation);
+        return ReservationUtils.reservationToReservationWithoutUser(savedReservation);
     }
 
     private void throwIfNotAuthorizedToDelete(Reservation reservation) {

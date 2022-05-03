@@ -27,14 +27,9 @@ public class ReservationInternalService {
         this.reservationRepository = reservationRepository;
     }
 
-    private ReservationWithUsername reservationToReservationWithUsername(Reservation reservation) {
-        return new ReservationWithUsername(reservation.getId(), reservation.getStart(), reservation.getEnd(),
-                reservation.getPeopleComing(), reservation.getUser().getUsername(), reservation.getBowlingLane());
-    }
-
     public List<ReservationWithUsername> getReservationsByLane(BowlingLane bowlingLane) {
         return reservationRepository.findReservationsByBowlingLane(bowlingLane).stream()
-                .map(this::reservationToReservationWithUsername)
+                .map(ReservationUtils::reservationToReservationWithUsername)
                 .toList();
     }
 
