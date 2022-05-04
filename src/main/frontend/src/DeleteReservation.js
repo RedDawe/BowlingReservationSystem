@@ -16,8 +16,6 @@ class DeleteReservation extends React.Component {
         fetch('/api/v1/reservation/delete/'
             + event.target.getAttribute('data-key'), {
             method: 'DELETE'
-        }).then(response => {
-            console.log(response);
         });
     }
 

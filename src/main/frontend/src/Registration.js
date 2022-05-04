@@ -40,6 +40,18 @@ class RegistrationComponent extends React.Component {
 
                     <input type={"submit"} value={"Register"} />
                 </form>
+                <br/>
+                <p>
+                    <h3>Username requires:</h3>
+                    1. 3 to 255 characters <br/>
+                    2. Only consists of upper and lowercase letters, digits and .@
+
+                    <h3>Password requires:</h3>
+                    1. 8 to 50 characters <br/>
+                    2. Only consists of upper and lowercase letters, digits and @$!%*#?& <br/>
+                    3. At least one digit <br/>
+                    4. At least one letter (can be either upper or lowercase) <br/>
+                </p>
             </div>
         )
     }

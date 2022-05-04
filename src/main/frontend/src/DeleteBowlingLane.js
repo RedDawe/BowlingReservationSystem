@@ -14,12 +14,7 @@ class DeleteBowlingLane extends React.Component{
         fetch('/api/v1/bowling-lane/delete/' + this.state.value, {
             method: 'DELETE'
         })
-            .then(response => {
-                console.log(response);
-                let promise = response.json();
-                console.log(promise);
-                return promise;
-            })
+            .then(response => response.json())
             .then(responseJson => {
                 this.setState({value: '', couldNotReassign: responseJson})
             })

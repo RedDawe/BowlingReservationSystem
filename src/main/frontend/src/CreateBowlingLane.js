@@ -17,9 +17,6 @@ class CreateBowlingLane extends React.Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({number: this.state.value})
-        }).then(response => {
-            console.log(response);
-            console.log(response.json());
         });
 
         this.setState({value: ''})

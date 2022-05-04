@@ -16,9 +16,6 @@ class CreateReservation extends React.Component {
     }
 
     handleSubmit(event) {
-        console.log(this.state);
-        console.log(JSON.stringify(this.state));
-
         const date = this.state.date;
         const start = this.state.start;
         const end = this.state.end;
@@ -26,8 +23,6 @@ class CreateReservation extends React.Component {
         const bowlingLaneNumber = this.state.bowlingLaneNumber;
 
         const datePlus1 = new Date(new Date(date).getTime() + 86400000).toISOString().split('T')[0];
-
-        console.log(datePlus1);
 
         const base64 = require('base-64');
         const username = 'manager';
@@ -45,8 +40,7 @@ class CreateReservation extends React.Component {
                 bowlingLane: {number: bowlingLaneNumber}
             })
 
-        }).then(response => response.json())
-            .then(json => console.log(json));
+        });
 
         event.preventDefault();
     }
