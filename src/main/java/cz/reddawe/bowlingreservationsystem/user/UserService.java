@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
      * 1. 3 to 255 characters
      * 2. Only consists of upper and lowercase letters, digits and .@
      */
-    private static final String usernameRegex = "^[a-zA-Z\\d@.]{3,255}$";
+    private static final String USERNAME_REGEX = "^[a-zA-Z\\d@.]{3,255}$";
     /**
      * Matches:
      * 1. 8 to 50 characters
@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
      * 3. At least one digit
      * 4. At least one letter (can be either upper or lowercase)
      */
-    private static final String passwordRegex = "^(?=.*\\d)(?=.*[a-zA-Z])[a-zA-Z\\d@$!%*#?&]{8,50}$";
+    private static final String PASSWORD_REGEX = "^(?=.*\\d)(?=.*[a-zA-Z])[a-zA-Z\\d@$!%*#?&]{8,50}$";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -83,11 +83,11 @@ public class UserService implements UserDetailsService {
     }
 
     private static boolean validateUsername(String username) {
-        return username.matches(usernameRegex);
+        return username.matches(USERNAME_REGEX);
     }
 
     private static boolean validatePassword(String password) {
-        return password.matches(passwordRegex);
+        return password.matches(PASSWORD_REGEX);
     }
 
     /**
