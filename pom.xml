@@ -118,6 +118,7 @@
                     <workingDirectory>${basedir}/src/main/frontend</workingDirectory>
                     <installDirectory>${basedir}/frontend-maven-plugin-node-installation</installDirectory>
                     <nodeVersion>v16.15.0</nodeVersion>
+                    <npmVersion>8.5.5</npmVersion>
                 </configuration>
             </plugin>
             <plugin>
