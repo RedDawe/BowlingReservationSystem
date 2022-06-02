@@ -116,7 +116,7 @@
                 </executions>
                 <configuration>
                     <workingDirectory>${basedir}/src/main/frontend</workingDirectory>
-                    <installDirectory>${project.build.directory}</installDirectory>
+                    <installDirectory>${basedir}/frontend-maven-plugin-node-installation</installDirectory>
                     <nodeVersion>v16.15.0</nodeVersion>
                 </configuration>
             </plugin>
