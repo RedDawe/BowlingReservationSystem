@@ -32,4 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
+.git
+.gitignore
+Dockerfile
+.dockerignore
+Analysis
 frontend-maven-plugin-node-installation
