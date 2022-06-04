@@ -38,3 +38,4 @@ Dockerfile
 .dockerignore
 Analysis
 frontend-maven-plugin-node-installation
+kubernetes-specs
