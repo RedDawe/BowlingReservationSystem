@@ -29,4 +29,4 @@ ARG MAVEN_BUILD_WORKDIR
 
 COPY --from=MAVEN_BUILD $MAVEN_BUILD_WORKDIR/target/BowlingReservationSystem*.jar /BowlingReservationSystem.jar
 
-CMD ["java", "-jar", "BowlingReservationSystem.jar"]
+CMD ["java", "-jar", "BowlingReservationSystem.jar", "--spring.profiles.active=deployment"]

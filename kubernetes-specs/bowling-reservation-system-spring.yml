@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bowling-reservation-system-spring
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: bowling-reservation-system-spring
+  replicas: 1
+  template:
+    metadata:
+      name: bowling-reservation-system-spring
+      labels:
+        app: bowling-reservation-system-spring
+    spec:
+      containers:
+        - name: bowling-reservation-system-spring
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: postgres_password
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: hostname-config
+                  key: postgres_host
+          image: reddawe/brs:latest
