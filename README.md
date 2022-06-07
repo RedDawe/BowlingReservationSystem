@@ -22,7 +22,7 @@ You can also refer to the following ERD Diagram.
 ## Pre-requisites:
 - Kubernetes
 - kubectl
-- <a href="https://github.com/RedDawe/BowlingReservationSystem/tree/main/kubernetes-specs">kubernetes-specs</a> available in your namespace 
+- <a href="https://github.com/RedDawe/BowlingReservationSystem/tree/main/kubernetes-specs">kubernetes-specs</a> files 
 
 ## Configuration:
 The basic configuration that should be done is changing the password manager in: kubernetes-specs/bowling-reservation-system-spring.yml.
