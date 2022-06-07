@@ -1,3 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: brs-secret
+type: Opaque
+data:
+  manager_password: cG9ldC1ob21lY29taW5nLWdyb3VwLXRyeQ==
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,12 +32,31 @@ spec:
                   key: postgres_user
             - name: POSTGRES_PASSWORD
               valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
+                secretKeyRef:
+                  name: postgres-secret
                   key: postgres_password
             - name: POSTGRES_HOST
               valueFrom:
                 configMapKeyRef:
                   name: hostname-config
                   key: postgres_host
+            - name: MANAGER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: brs-secret
+                  key: manager_password
           image: reddawe/brs:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bowling-reservation-system-spring
+spec:
+  selector:
+    app: bowling-reservation-system-spring
+  type: LoadBalancer
+  ports:
+    -  protocol: TCP
+       port: 8080
+       targetPort: 8080
+       nodePort: 30000

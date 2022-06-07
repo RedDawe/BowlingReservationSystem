@@ -5,7 +5,14 @@ metadata:
   namespace: default
 data:
   postgres_user: admin
-  postgres_password: battery-horse-correct-staple
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+data:
+  postgres_password: YmF0dGVyeS1ob3JzZS1jb3JyZWN0LXN0YXBsZQ==
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -46,8 +53,8 @@ spec:
                   key: postgres_user
             - name: POSTGRES_PASSWORD
               valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
+                secretKeyRef:
+                  name: postgres-secret
                   key: postgres_password
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
