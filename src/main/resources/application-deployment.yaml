@@ -20,4 +20,4 @@ server:
     include-message: always
 
 application:
-  managerPassword: poet-homecoming-group-try
+  managerPassword: ${MANAGER_PASSWORD}
