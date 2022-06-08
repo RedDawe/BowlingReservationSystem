@@ -4,7 +4,7 @@ This system is meant to be used by a bowling alley to manage their users reserva
 
 Functionality is described by the following Use Case Diagram and further by Analysis present in the repository.
 
-![Use Case Diagram](https://drive.google.com/uc?export=view&id=1hj5hHYzzj_LsvGsLT8bA0t_EdzgbdIJz)
+![Use Case Diagram](https://drive.google.com/uc?export=view&id=1I9JOl8UCkrnuSKwodPG17Z9lF7K2ld6I)
 
 You can also refer to the following ERD Diagram.
 
