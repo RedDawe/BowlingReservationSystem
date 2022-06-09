@@ -22,6 +22,9 @@ public class FinishedReservationsDeleter {
         this.reservationRepository = reservationRepository;
     }
 
+    /**
+     * Deletes reservations that have already ended.
+     */
     @Scheduled(cron = "@midnight")
     public void deleteFinishedReservations() {
         reservationRepository.deleteAllById(reservationRepository.findIdByExpired(LocalDateTime.now()));
