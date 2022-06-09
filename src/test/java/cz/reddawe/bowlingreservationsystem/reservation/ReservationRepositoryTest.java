@@ -387,7 +387,7 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void itShouldFindIdByExpired() {
+    void itShouldFindIdByFinished() {
         // given
         User user = new User("username1", "password1", roleRepository.getByName("USER"));
         user = userRepository.save(user);
@@ -409,7 +409,7 @@ class ReservationRepositoryTest {
         reservation2 = underTest.save(reservation2);
 
         // when
-        List<Long> result = underTest.findIdByExpired(LocalDateTime.of(
+        List<Long> result = underTest.findIdByFinished(LocalDateTime.of(
                 3000, 2,  1, 8, 30));
 
         // then
