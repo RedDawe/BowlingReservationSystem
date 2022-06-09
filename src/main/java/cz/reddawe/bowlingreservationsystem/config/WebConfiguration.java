@@ -21,8 +21,6 @@ public class WebConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * source: <a href="https://stackoverflow.com/a/50709789/9842531">https://stackoverflow.com/a/50709789/9842531</a>
-     *
      * Ensure client-side paths redirect to index.html because client handles routing.
      * NOTE: Do NOT use @EnableWebMvc, or it will break this.
      */
