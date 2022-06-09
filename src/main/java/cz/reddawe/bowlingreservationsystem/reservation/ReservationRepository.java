@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -28,5 +27,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findReservationsByBowlingLane(BowlingLane bowlingLane);
 
     @Query("SELECT r.id FROM Reservation r WHERE r.end <= ?1")
-    List<Long> findIdByExpired(LocalDateTime now);
+    List<Long> findIdByFinished(LocalDateTime now);
 }
