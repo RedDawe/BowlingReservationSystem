@@ -1,6 +1,6 @@
 # BowlingReservationSystem
 
-Reservation system for a bowling alley to manage their users' reservations.
+Reservation system for a bowling alley to manage reservations.
 
 Functionality is described by the following Use Case Diagram and further by Analysis present in the repository.
 
